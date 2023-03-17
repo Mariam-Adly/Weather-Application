@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.SharedPreferences
-import android.nfc.Tag
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -14,12 +13,8 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.example.weatherapplication.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class SplashScreen : AppCompatActivity() {
     lateinit var initialSettingDialog : Dialog
     lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,21 +23,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initialSettingDialog = Dialog(this)
-       /* CoroutineScope(Dispatchers.Main).launch {
-            delay(5000L)
-            startActivity(Intent(this@MainActivity,HomeActivity::class.java))
-            finish()
-        }*/
          setLogoAnimated(binding)
     }
 
     fun setLogoAnimated(binding: ActivityMainBinding){
 
-        binding.lottieWeather.animate().translationX(1500F).setDuration(1000).setStartDelay(4000)
+        binding.lottieWeather.animate().setDuration(1000).setStartDelay(4000)
         Handler().postDelayed(Runnable {
             if (!isFirstTime()){
                 Log.e(TAG, "onCreate: not first", )
-                startActivity(Intent( this, MainActivity::class.java))
+                startActivity(Intent( this, HomeActivity::class.java))
                 finish()
             }
             else{
@@ -53,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     fun isFirstTime() : Boolean{
         var firstTime : SharedPreferences = getSharedPreferences("first", MODE_PRIVATE)
-        Log.e("Mariam", "isFirstTime: isFirstTime ${firstTime.getBoolean("first", true)}", )
+        Log.e(TAG, "isFirstTime: ${firstTime.getBoolean("first", true)}")
         return firstTime.getBoolean("first", true)
     }
 

@@ -7,6 +7,15 @@
     <string name="location">Location</string>
     <string name="gps">GPS</string>
     <string name="map">Map</string>
+    <string name="today_txt">Today</string>
+    <string name="next_forecast_txt">For 7 Days</string>
+    <string name="weather_details_txt">Weather Details</string>
+    <string name="pressure_txt">Pressure</string>
+    <string name="wind_txt">Wind</string>
+    <string name="cloud_txt">Cloud</string>
+    <string name="u_v_txt">U V</string>
+    <string name="visibility_txt">Visibility</string>
+    <string name="humidity_txt">Humidity</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>
