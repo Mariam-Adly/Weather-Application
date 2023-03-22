@@ -11,6 +11,7 @@ import java.util.*
 class Utility {
 
     companion object{
+
         val latLongSharedPrefKey : String = "LatLong"
         val GPSLatKey : String = "GPSLat"
         val GPSLongKey : String = "GPSLong"
@@ -129,6 +130,14 @@ class Utility {
             editor.apply()
         }
 
+        fun initSharedPref(context: Context): SharedPreferences {
+            return context.getSharedPreferences(
+                "sharedPref",
+                Context.MODE_PRIVATE
+            )
+
+        }
+
         fun saveIsMapSharedPref(context: Context, key : String, value : Boolean){
             var editor : SharedPreferences.Editor = context.getSharedPreferences("isMap",
                 AppCompatActivity.MODE_PRIVATE
@@ -138,7 +147,7 @@ class Utility {
         }
 
 
-     /*   fun getWeatherIcon(imageString: String): Int {
+       fun getWeatherIcon(imageString: String): Int {
             val imageInInteger: Int
             when (imageString) {
                 "01d" -> imageInInteger = R.drawable.icon_01d
@@ -162,7 +171,7 @@ class Utility {
                 else -> imageInInteger = R.drawable.cloud_icon
             }
             return imageInInteger
-        }*/
+        }
 
         fun convertNumbersToArabic(value: Double): String {
             return (value.toString() + "")
