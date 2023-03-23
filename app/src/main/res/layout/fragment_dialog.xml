@@ -94,7 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="#061255"
+            android:backgroundTint="@color/custom_grey"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="OK"
