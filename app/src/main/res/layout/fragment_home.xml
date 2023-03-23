@@ -38,7 +38,7 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/merriweathersans_bold"
                     android:gravity="center"
-                    android:text="baris"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"

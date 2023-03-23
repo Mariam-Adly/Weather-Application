@@ -16,6 +16,7 @@
     <string name="u_v_txt">U V</string>
     <string name="visibility_txt">Visibility</string>
     <string name="humidity_txt">Humidity</string>
+    <string name="weather_forecast">Weather Forecast</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

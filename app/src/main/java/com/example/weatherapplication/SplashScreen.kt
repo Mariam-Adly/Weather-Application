@@ -69,7 +69,7 @@ class SplashScreen : AppCompatActivity() {
             if(gpsRB.isChecked or mapRB.isChecked){
                 when(locationGroup.checkedRadioButtonId){
                     R.id.radio_button_GPS -> {
-                        startActivity(Intent( this, HomeFragment::class.java))
+                        startActivity(Intent( this, MainActivity::class.java))
                         finish()
                         Utility.saveFirstTimeEnterAppSharedPref(applicationContext, "first", false)
                     }

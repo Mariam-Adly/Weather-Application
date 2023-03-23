@@ -1,4 +1,4 @@
-package com.example.weatherapplication.home.view
+package com.example.weatherapplication
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -16,7 +16,6 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
 object TrackingUtility {
-
 
     fun hasLocationPermissions(context:Context)=
         if(Build.VERSION.SDK_INT<Build.VERSION_CODES.Q){

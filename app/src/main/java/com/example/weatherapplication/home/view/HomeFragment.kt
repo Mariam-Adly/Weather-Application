@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherapplication.TrackingUtility
 import com.example.weatherapplication.Utility
 import com.example.weatherapplication.databinding.FragmentHomeBinding
 import com.example.weatherapplication.model.network.RemoteSourceImpl
@@ -69,22 +70,23 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
     ): View? {
         // Inflate the layout for this fragment
         fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        getLastLocation()
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         var view : View = binding.root
         return view
+        requestPermissions()
     }
 
     override fun onResume() {
         super.onResume()
+        getLastLocation()
         progressDialog = ProgressDialog(requireContext())
         progressDialog.setTitle("loading")
         progressDialog.setMessage("data is loading please wait")
         progressDialog.show()
         CoroutineScope(Dispatchers.IO).launch {
-            delay(4000)
-            progressDialog.dismiss()
+            delay(2000)
+           progressDialog.dismiss()
         }
     }
 
@@ -93,13 +95,8 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
         viewModel = ViewModelProvider(requireActivity(),viewModelFactory).get(HomeViewModel::class.java)
         initHoursRecycler()
         initWeekRecycler()
-//        progressDialog = ProgressDialog(requireContext())
-//        progressDialog.setTitle("loading")
-//        progressDialog.setMessage("data is loading please wait")
-//        progressDialog.show()
         addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
         viewModel = HomeViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance()))
-        viewModel.getCurrentTemp(latitude,longitude,lang,unit)
         getCurrentWeather()
     }
 
@@ -110,8 +107,6 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
                     updateUIWithWeatherData(it)
                 }
             }
-           // progressDialog.dismiss()
-
     }
 
     fun updateUIWithWeatherData(weather: OpenWeather){
@@ -164,6 +159,7 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
             if(mLastLocation != null) {
                 latitude = mLastLocation.latitude
                 longitude = mLastLocation.longitude
+
             }
             val address = addressGeocoder.getFromLocation(mLastLocation.latitude,mLastLocation.longitude,1)
             if(address != null) {
@@ -185,24 +181,18 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
         return false
     }
 
-    private fun isLocationEnabled(): Boolean{
+
+        private fun isLocationEnabled(): Boolean{
         val locationManager: LocationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
+      }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if(requestCode == PERMISSION_ID)
-        {
-            if(grantResults.isNotEmpty() && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                getLastLocation()
-            }
-        }
-
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
        EasyPermissions.onRequestPermissionsResult(requestCode,permissions,grantResults,this)
     }
@@ -242,11 +232,6 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
             )
 
         }
-//        ActivityCompat.requestPermissions(
-//            requireActivity(), arrayOf(
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            ),PERMISSION_ID)
     }
 
     @SuppressLint("MissingPermission")
@@ -261,11 +246,9 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
                     }else{
                         latitude = location.latitude
                         longitude = location.longitude
+                        viewModel.getCurrentTemp(latitude,longitude,lang,unit)
                         val address = addressGeocoder.getFromLocation(location.latitude,location.longitude,1)
                             binding.locationName.text = "${address?.get(0)!!.subAdminArea}, ${address[0].adminArea}"
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//
-//                        },2000)
                         Log.i("mariam", "getLastLocation: ${location.longitude.toString()} ")
                     }
                 }

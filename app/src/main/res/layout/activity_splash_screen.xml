@@ -16,11 +16,26 @@
       android:layout_height="wrap_content"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.0"
       app:lottie_autoPlay="true"
       app:lottie_loop="true"
-      app:lottie_rawRes="@raw/weather"
-      />
+      app:lottie_rawRes="@raw/weather" />
+
+  <TextView
+      android:id="@+id/textView2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="152dp"
+      android:textColor="@color/white"
+      android:text="@string/weather_forecast"
+      android:textSize="30sp"
+      android:fontFamily="@font/merriweathersans_bold"
+      app:layout_constraintBottom_toBottomOf="@+id/animationView"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.498"
+      app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
