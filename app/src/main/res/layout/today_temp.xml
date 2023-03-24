@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="20dp"
-    android:layout_margin="3dp"
+    android:layout_margin="5dp"
+    app:guidelineUseRtl="true"
     android:backgroundTint="@color/custom_grey">
 
 

@@ -10,7 +10,6 @@ import com.example.weatherapplication.R
 
 class FavoriteFragment : Fragment() {
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

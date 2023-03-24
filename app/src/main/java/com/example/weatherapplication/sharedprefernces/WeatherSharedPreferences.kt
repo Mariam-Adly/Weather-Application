@@ -1,4 +1,4 @@
-package com.example.weatherapplication.model.sharedprefernces
+package com.example.weatherapplication.sharedprefernces
 
 import android.content.Context
 

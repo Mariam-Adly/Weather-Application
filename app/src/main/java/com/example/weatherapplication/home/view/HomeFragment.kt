@@ -1,4 +1,3 @@
-
 package com.example.weatherapplication.home.view
 
 
@@ -24,21 +23,22 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherapplication.TrackingUtility
-import com.example.weatherapplication.Utility
+import com.example.weatherapplication.utility.TrackingUtility
+import com.example.weatherapplication.utility.Utility
 import com.example.weatherapplication.databinding.FragmentHomeBinding
-import com.example.weatherapplication.model.network.RemoteSourceImpl
+import com.example.weatherapplication.datasource.network.RemoteSourceImpl
+import com.example.weatherapplication.datasource.repo.WeatherRepo
 import com.example.weatherapplication.home.viewmodel.HomeViewModel
 import com.example.weatherapplication.home.viewmodel.HomeViewModelFactory
 import com.example.weatherapplication.model.Daily
 import com.example.weatherapplication.model.Hourly
 import com.example.weatherapplication.model.OpenWeather
-import com.example.weatherapplication.model.models.WeatherRepo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -246,10 +246,16 @@ class HomeFragment : Fragment(),EasyPermissions.PermissionCallbacks {
                     }else{
                         latitude = location.latitude
                         longitude = location.longitude
-                        viewModel.getCurrentTemp(latitude,longitude,lang,unit)
-                        val address = addressGeocoder.getFromLocation(location.latitude,location.longitude,1)
+                        try {
+                            viewModel.getCurrentTemp(latitude, longitude, lang, unit)
+                            val address = addressGeocoder.getFromLocation(location.latitude,location.longitude,1)
                             binding.locationName.text = "${address?.get(0)!!.subAdminArea}, ${address[0].adminArea}"
-                        Log.i("mariam", "getLastLocation: ${location.longitude.toString()} ")
+                            Log.i("mariam", "getLastLocation: ${location.longitude.toString()} ")
+                        }catch (e: Exception){
+                            val snackBar =
+                                Snackbar.make(binding.root, "${e.message}", Snackbar.LENGTH_LONG)
+                            snackBar.show()
+                        }
                     }
                 }
             }else{

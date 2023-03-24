@@ -1,4 +1,4 @@
-package com.example.weatherapplication.model.network
+package com.example.weatherapplication.datasource.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

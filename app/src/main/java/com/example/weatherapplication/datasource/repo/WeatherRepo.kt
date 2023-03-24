@@ -1,7 +1,8 @@
-package com.example.weatherapplication.model.models
+package com.example.weatherapplication.datasource.repo
 
+
+import com.example.weatherapplication.datasource.network.RemoteSource
 import com.example.weatherapplication.model.OpenWeather
-import com.example.weatherapplication.model.network.RemoteSource
 import retrofit2.Response
 
 

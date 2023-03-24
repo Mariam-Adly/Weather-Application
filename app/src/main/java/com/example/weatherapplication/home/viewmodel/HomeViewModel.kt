@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapplication.model.OpenWeather
-import com.example.weatherapplication.model.models.WeatherRepoInterface
+import com.example.weatherapplication.datasource.repo.WeatherRepoInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -4,11 +4,10 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherapplication.Utility
+import com.example.weatherapplication.utility.Utility
 import com.example.weatherapplication.databinding.TodayTempBinding
 import com.example.weatherapplication.model.Hourly
 import java.time.LocalDateTime
