@@ -1,8 +1,9 @@
-package com.example.weatherapplication
+package com.example.weatherapplication.utility
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weatherapplication.R
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat

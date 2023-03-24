@@ -1,4 +1,4 @@
-package com.example.weatherapplication.model.network
+package com.example.weatherapplication.datasource.network
 
 import com.example.weatherapplication.model.OpenWeather
 import retrofit2.Response

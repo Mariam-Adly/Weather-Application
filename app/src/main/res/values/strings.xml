@@ -17,6 +17,14 @@
     <string name="visibility_txt">Visibility</string>
     <string name="humidity_txt">Humidity</string>
     <string name="weather_forecast">Weather Forecast</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="language">Language</string>
+    <string name="English">English</string>
+    <string name="arabic">Arabic</string>
+    <string name="temperature">Temperature</string>
+    <string name="celsius">Celsius</string>
+    <string name="Kelvin">Kelvin</string>
+    <string name="fahrenheit">Fahrenheit</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

@@ -1,4 +1,4 @@
-package com.example.weatherapplication.model.network
+package com.example.weatherapplication.datasource.network
 
 import com.example.weatherapplication.model.OpenWeather
 import retrofit2.Response
@@ -16,7 +16,7 @@ interface ApiService {
     suspend fun getCurrentTempData(
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
-        @Query("units") units: String ,
+        @Query("units") units: String,
         @Query("lang") lang: String = "eng",
         @Query("exclude") exclude: String = excludeMinutes,
         @Query("appid") appid: String = appId

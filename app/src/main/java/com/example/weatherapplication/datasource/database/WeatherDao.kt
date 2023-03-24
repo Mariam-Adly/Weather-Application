@@ -1,16 +1,17 @@
-package com.example.weatherapplication.model.database
+package com.example.weatherapplication.datasource.database
 
-import androidx.lifecycle.LiveData
+
 import androidx.room.*
 import com.example.weatherapplication.model.OpenWeather
+
 @Dao
 interface WeatherDao {
 
-    @get:Query("SELECT * FROM weather WHERE id = 'id'")
-    val getCurrentWeather : LiveData<OpenWeather>
+    @get:Query("SELECT * FROM weather where id = 'id'")
+    val getCurrentWeather : OpenWeather
 
-    @Query("SELECT * FROM weather WHERE id = 'id'")
-    suspend fun getStoredWeather() : OpenWeather
+//    @Query("SELECT * FROM weather ")
+//    suspend fun getStoredWeather() : OpenWeather
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCurrentWeather(weather : OpenWeather)

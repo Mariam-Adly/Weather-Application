@@ -17,9 +17,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.weatherapplication.databinding.ActivitySplashScreenBinding
 import com.example.weatherapplication.home.view.HomeFragment
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.weatherapplication.utility.Utility
 
 class SplashScreen : AppCompatActivity() {
     private lateinit var binding: ActivitySplashScreenBinding
@@ -74,7 +72,8 @@ class SplashScreen : AppCompatActivity() {
                         Utility.saveFirstTimeEnterAppSharedPref(applicationContext, "first", false)
                     }
                     R.id.radio_button_Maps -> {
-                        startActivity(Intent( this, HomeFragment::class.java))
+                        Utility.saveIsMapSharedPref(this, "isMap", true)
+                        startActivity(Intent( this, MapsActivity::class.java))
                         finish()
                         Utility.saveFirstTimeEnterAppSharedPref(applicationContext, "first", false)
                     }
