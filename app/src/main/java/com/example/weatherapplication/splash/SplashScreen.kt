@@ -1,4 +1,4 @@
-package com.example.weatherapplication
+package com.example.weatherapplication.splash
 
 import android.app.Dialog
 import android.content.Intent
@@ -15,8 +15,10 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.weatherapplication.MainActivity
+import com.example.weatherapplication.R
 import com.example.weatherapplication.databinding.ActivitySplashScreenBinding
-import com.example.weatherapplication.home.view.HomeFragment
+import com.example.weatherapplication.map.MapsActivity
 import com.example.weatherapplication.utility.Utility
 
 class SplashScreen : AppCompatActivity() {

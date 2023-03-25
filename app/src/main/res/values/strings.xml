@@ -25,6 +25,7 @@
     <string name="celsius">Celsius</string>
     <string name="Kelvin">Kelvin</string>
     <string name="fahrenheit">Fahrenheit</string>
+    <string name="search">Search</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>
