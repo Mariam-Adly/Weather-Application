@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -22,6 +23,8 @@ import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModel
 import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.weatherapplication.map.MapsActivity
 import com.example.weatherapplication.model.FavoriteWeather
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
@@ -39,11 +42,6 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
         // Inflate the layout for this fragment
         binding = FragmentFavoriteBinding.inflate(inflater, container, false)
         var view: View = binding.root
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         favoriteViewModelFactory =
             FavoriteViewModelFactory(
                 WeatherRepo.getInstance(
@@ -52,12 +50,22 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
                 ))
         favoriteViewModel =
             ViewModelProvider(requireActivity(), favoriteViewModelFactory).get(FavoriteViewModel::class.java)
+        return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initFavRecycler()
+        getFavPlaces()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.addFavBtn.setOnClickListener {
             startActivity(Intent(requireContext(), MapsActivity::class.java))
         }
-        initFavRecycler()
-        getFavPlaces()
+
     }
 
 
@@ -87,7 +95,7 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
             }).attachToRecyclerView(favRecycler)
         }
     }
-    fun getFavPlaces(){
+     fun getFavPlaces(){
         favoriteViewModel.getFavPlaces().observe(
             viewLifecycleOwner){
                 favPlaces ->

@@ -46,8 +46,9 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
         localSource.insertWeatherModel(openWeather)
     }
 
-    override val getAllFavoriteWeather: LiveData<List<FavoriteWeather>>
-        get() = localSource.getAllFavoriteWeather
+    override suspend fun getAllFavoriteWeather(): LiveData<List<FavoriteWeather>> {
+        return localSource.getAllFavoriteWeather()
+    }
 
     override suspend fun deleteFavoritePlace(favoriteWeather: FavoriteWeather) {
         localSource.deleteFavoritePlace(favoriteWeather)
