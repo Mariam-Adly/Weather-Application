@@ -17,7 +17,7 @@ interface WeatherRepoInterface {
     suspend fun selectAllStoredWeatherModel(currentTimeZone: String): LiveData<OpenWeather>
     suspend fun insertWeatherModel(openWeather: OpenWeather)
 
-     val getAllFavoriteWeather : LiveData<List<FavoriteWeather>>
+    suspend fun getAllFavoriteWeather() : LiveData<List<FavoriteWeather>>
     suspend fun deleteFavoritePlace(favoriteWeather: FavoriteWeather)
     suspend fun insertFavoritePlace(favoriteWeather: FavoriteWeather)
     suspend fun updateFavoritePlace(favoriteWeather: FavoriteWeather)

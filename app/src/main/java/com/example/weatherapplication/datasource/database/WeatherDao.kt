@@ -16,8 +16,8 @@ interface WeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertWeatherModel(openWeather: OpenWeather)
 
-    @get:Query("SELECT * FROM favoriteWeather")
-    val getAllFavoriteWeather : LiveData<List<FavoriteWeather>>
+    @Query("SELECT * FROM favoriteWeather")
+    fun getAllFavoriteWeather() : LiveData<List<FavoriteWeather>>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFavoritePlace(favoriteWeather: FavoriteWeather)
 

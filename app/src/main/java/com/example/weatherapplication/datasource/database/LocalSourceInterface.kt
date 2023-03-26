@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalSourceInterface {
 
-    val getAllFavoriteWeather : LiveData<List<FavoriteWeather>>
+    suspend fun getAllFavoriteWeather() : LiveData<List<FavoriteWeather>>
 
     suspend fun selectAllStoredWeatherModel(currentTimeZone: String): LiveData<OpenWeather>
    suspend fun insertWeatherModel(openWeather: OpenWeather)

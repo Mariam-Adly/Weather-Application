@@ -53,6 +53,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.*
+import java.io.IOException
 import java.util.*
 
 private val REQUEST_CODE = 500
@@ -93,12 +94,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        favoriteViewModelFactory = FavoriteViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
+        favoriteViewModel = ViewModelProvider(this,favoriteViewModelFactory).get(FavoriteViewModel::class.java)
         fusedLocation = LocationServices.getFusedLocationProviderClient(requireActivity())
         addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
         fetchLocation()
-        favoriteViewModelFactory = FavoriteViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
-        favoriteViewModel = ViewModelProvider(this,favoriteViewModelFactory).get(FavoriteViewModel::class.java)
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
     }
@@ -218,6 +219,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     }
 
+    fun getAddressAndDateForLocation(lat : Double, lon : Double) : String{
+        //GPSLat GPSLong
+        var addressGeocoder : Geocoder = Geocoder(requireContext(), Locale.getDefault())
+        try {
+            var myAddress : List<Address> = addressGeocoder.getFromLocation(lat, lon, 2)!!
+            if(myAddress.isNotEmpty()){
+                return "${myAddress[0].subAdminArea},${myAddress[0].adminArea}"
+            }
+        }catch (e : IOException){
+            e.printStackTrace()
+        }
+        return ""
+    }
+
     fun searchLocation() {
         var location =  binding.searchTxt.text.toString().trim()
 
@@ -237,8 +252,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
             val address = addressList!![0]
              latLng = LatLng(address.latitude,address.longitude)
 
-            favoriteWeather = FavoriteWeather(address.adminArea,latLng!!.longitude,latLng!!.latitude)
-              latLng ?.let {
+            favoriteWeather = FavoriteWeather(getAddressAndDateForLocation(latLng!!.latitude,latLng!!.longitude),latLng!!.latitude,latLng!!.longitude)
+            latLng ?.let {
                   mMap!!.addMarker(MarkerOptions().position(it).title(location))
                   mMap!!.animateCamera(CameraUpdateFactory.newLatLng(it))
               }

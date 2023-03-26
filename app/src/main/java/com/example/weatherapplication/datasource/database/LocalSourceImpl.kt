@@ -11,9 +11,9 @@ class LocalSourceImpl(private val context: Context):LocalSourceInterface {
         val db  = AppDatabase.getInstance(context)
         db.getWeatherDao()
     }
-    override val getAllFavoriteWeather: LiveData<List<FavoriteWeather>>
-        get() = weatherDao.getAllFavoriteWeather
-
+    override suspend fun getAllFavoriteWeather() : LiveData<List<FavoriteWeather>> {
+        return weatherDao.getAllFavoriteWeather()
+    }
     override suspend fun selectAllStoredWeatherModel(currentTimeZone: String): LiveData<OpenWeather> {
         return weatherDao.selectWeatherModel(currentTimeZone)
     }
