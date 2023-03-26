@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapplication.databinding.FragmentHomeBinding
+import com.example.weatherapplication.datasource.database.LocalSourceImpl
 import com.example.weatherapplication.datasource.network.RemoteSourceImpl
 import com.example.weatherapplication.datasource.repo.WeatherRepo
 import com.example.weatherapplication.home.viewmodel.HomeViewModel
@@ -91,11 +92,11 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModelFactory =
-            HomeViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance()))
+            HomeViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(),LocalSourceImpl(requireContext())))
         viewModel =
             ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel::class.java)
         addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
-        viewModel = HomeViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance()))
+        viewModel = HomeViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
     }
 
     fun getCurrentWeather() {
@@ -258,7 +259,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             )
                             binding.locationName.text =
                                 "${address?.get(0)!!.subAdminArea}, ${address[0].adminArea}"
-                            Log.i("mariam", "getLastLocation: ${location.longitude} ")
+                            Log.i("mariam", "getLastLocation: ${location.longitude} ${location.latitude} ")
                         } catch (e: Exception) {
                             val snackBar =
                                 Snackbar.make(binding.root, "${e.message}", Snackbar.LENGTH_LONG)
@@ -279,6 +280,29 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             requestPermissions()
         }
     }
+
+//    @SuppressLint("MissingPermission")
+//    private fun getLastLocation() {
+//
+//        if (checkPermissions()) {
+//            if (isLocationEnabled()) {
+//                fusedClient.lastLocation.addOnCompleteListener { task ->
+//                    var location: Location? = task.result
+//                     newLocation()
+//                    Log.i("mariam", location?.latitude.toString())
+//                    if (location != null) {
+//                        viewModel.getCurrentTemp(latitude, longitude, lang, unit)
+//                    }
+//
+//                }
+//            } else {
+//                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+//                startActivity(intent)
+//            }
+//        } else {
+//            requestPermissions()
+//        }
+//    }
 
     @SuppressLint("MissingPermission")
     private fun newLocation() {

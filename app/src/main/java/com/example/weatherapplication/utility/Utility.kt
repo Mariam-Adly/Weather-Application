@@ -2,6 +2,7 @@ package com.example.weatherapplication.utility
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weatherapplication.R
 import java.text.DateFormat
@@ -192,7 +193,10 @@ class Utility {
                 .replace("9".toRegex(), "٩").replace("0".toRegex(), "٠")
         }
 
+        fun isOnline(context: Context): Boolean {
+            val cm = context?.getSystemService(AppCompatActivity.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork = cm.activeNetworkInfo
+            return if (activeNetwork != null) {true}else{false}}
+
     }
-
-
 }

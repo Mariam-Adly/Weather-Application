@@ -9,7 +9,11 @@
         android:id="@+id/favoriteFragment"
         android:name="com.example.weatherapplication.favorite.view.FavoriteFragment"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_navigation_fav_to_navigation_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/alertFragment"
         android:name="com.example.weatherapplication.alert.view.AlertFragment"
