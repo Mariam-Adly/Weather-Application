@@ -25,6 +25,14 @@
     <string name="celsius">Celsius</string>
     <string name="Kelvin">Kelvin</string>
     <string name="fahrenheit">Fahrenheit</string>
+    <string name="search">Search</string>
+    <string name="add_fav_mgs">Do you want to save this location to favorites?</string>
+    <string name="save_btn">Save</string>
+    <string name="no_internet_msg">No Internet</string>
+    <string name="confirm_save_txt">Confirm</string>
+    <string name="cancel_btn">Cancel</string>
+    <string name="locationInMap">locationInMap</string>
+    <string name="locationSearchInMap">locationSearchInMap</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

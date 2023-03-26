@@ -1,10 +1,12 @@
 package com.example.weatherapplication.home.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapplication.Location
 import com.example.weatherapplication.model.OpenWeather
 import com.example.weatherapplication.datasource.repo.WeatherRepoInterface
 import kotlinx.coroutines.Dispatchers
@@ -13,8 +15,6 @@ import kotlinx.coroutines.withContext
 
 
 class HomeViewModel(val repo : WeatherRepoInterface) : ViewModel(){
-
-
 
     private val _mutableWeather = MutableLiveData<OpenWeather>()
     var weather : LiveData<OpenWeather> = _mutableWeather
