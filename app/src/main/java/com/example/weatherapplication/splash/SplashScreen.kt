@@ -53,7 +53,7 @@ class SplashScreen : AppCompatActivity() {
     }
     fun isFirstTime() : Boolean{
         var firstTime : SharedPreferences = getSharedPreferences("first", MODE_PRIVATE)
-        Log.e("sandra", "isFirstTime: isFirstTime ${firstTime.getBoolean("first", true)}", )
+        Log.e("mariam", "isFirstTime: isFirstTime ${firstTime.getBoolean("first", true)}", )
         return firstTime.getBoolean("first", true)
     }
 
@@ -82,7 +82,7 @@ class SplashScreen : AppCompatActivity() {
                 }
                 initialSettingDialog.dismiss()
             }else{
-                Toast.makeText(this,"please choise one of the choises", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,"please select one of the choices", Toast.LENGTH_SHORT).show()
             }
         }
         initialSettingDialog.show()

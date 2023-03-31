@@ -21,4 +21,5 @@ interface WeatherRepoInterface {
     suspend fun deleteFavoritePlace(favoriteWeather: FavoriteWeather)
     suspend fun insertFavoritePlace(favoriteWeather: FavoriteWeather)
     suspend fun updateFavoritePlace(favoriteWeather: FavoriteWeather)
+    suspend fun getFavWeatherData(favWeather : FavoriteWeather) :Response<OpenWeather>
 }

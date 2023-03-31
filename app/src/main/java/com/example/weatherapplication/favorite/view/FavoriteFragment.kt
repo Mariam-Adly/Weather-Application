@@ -1,20 +1,18 @@
 package com.example.weatherapplication.favorite.view
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherapplication.R
 import com.example.weatherapplication.databinding.FragmentFavoriteBinding
 import com.example.weatherapplication.datasource.database.LocalSourceImpl
 import com.example.weatherapplication.datasource.network.RemoteSourceImpl
@@ -23,8 +21,6 @@ import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModel
 import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.weatherapplication.map.MapsActivity
 import com.example.weatherapplication.model.FavoriteWeather
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
@@ -61,7 +57,8 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        initFavRecycler()
+        getFavPlaces()
         binding.addFavBtn.setOnClickListener {
             startActivity(Intent(requireContext(), MapsActivity::class.java))
         }
@@ -107,9 +104,8 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
     }
 
     override fun onClickFavPlace(favPlace: FavoriteWeather) {
-//        val action = FavoriteFragmentDirections.actionNavigationFavToNavigationHome()
-//        Navigation.findNavController(requireView()).navigate(action)
-
+        val action = FavoriteFragmentDirections.actionFavoriteFragmentToFavWeatherDetailsFragment(favPlace)
+         findNavController().navigate(action)
     }
 
 }

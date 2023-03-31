@@ -9,12 +9,6 @@ import com.example.weatherapplication.model.OpenWeather
 import retrofit2.Response
 
 
-
-const val defaultLat : Double = 31.205753
-const val defaultlong =  29.924526
-const val defaultlang = ""
-const val defaulttempUnit = ""
-
 class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInterface) : WeatherRepoInterface {
 
     companion object {
@@ -33,7 +27,6 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
    override suspend fun getCurrentTempData(
         lat: Double, long: Double, lang: String ,tempUnit: String
     ): Response<OpenWeather>{
-      // val language = sharedPreferences.getLanguage()
 
       return remoteSource.getCurrentTempData(lat,long,lang,tempUnit)
    }
@@ -60,6 +53,10 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
 
     override suspend fun updateFavoritePlace(favoriteWeather: FavoriteWeather) {
         localSource.updateFavoritePlace(favoriteWeather)
+    }
+
+    override suspend fun getFavWeatherData(favWeather: FavoriteWeather): Response<OpenWeather> {
+        return remoteSource.getFavWeatherData(favWeather)
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.weatherapplication.datasource.network
 
+import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
 import retrofit2.Response
 
@@ -26,10 +27,13 @@ class RemoteSourceImpl : RemoteSource {
         lang: String,
         tempUnit: String
     ): Response<OpenWeather> {
-//        var sharedPreferences : SharedPreferences = context.getSharedPreferences(Utility.latLongSharedPrefKey, AppCompatActivity.MODE_PRIVATE)
-//        var languageShared : SharedPreferences = context.getSharedPreferences("Language", AppCompatActivity.MODE_PRIVATE)
-//        var unitsShared : SharedPreferences = context.getSharedPreferences("Units", AppCompatActivity.MODE_PRIVATE)
        return apiService.getCurrentTempData(lat,long,tempUnit,lang)
 
     }
+
+    override suspend fun getFavWeatherData(favoriteWeather: FavoriteWeather): Response<OpenWeather> {
+        return apiService.getFavWeatherData(favoriteWeather.lat,favoriteWeather.lon,"metric","eng","minutely","67a004872bca4e7a1a7edbed26715b28")
+    }
+
+
 }

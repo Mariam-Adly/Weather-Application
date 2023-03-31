@@ -71,23 +71,21 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         var view: View = binding.root
         return view
-        requestPermissions()
     }
+
+
 
     override fun onResume() {
         super.onResume()
         getLastLocation()
-        progressDialog = ProgressDialog(requireContext())
-        progressDialog.setTitle("loading")
-        progressDialog.setMessage("data is loading please wait")
-        progressDialog.show()
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(2000)
-            progressDialog.dismiss()
-        }
-        initHoursRecycler()
-        initWeekRecycler()
-        getCurrentWeather()
+//        progressDialog = ProgressDialog(requireContext())
+//        progressDialog.setTitle("loading")
+//        progressDialog.setMessage("data is loading please wait")
+//        progressDialog.show()
+//        CoroutineScope(Dispatchers.IO).launch {
+//            delay(2000)
+//            progressDialog.dismiss()
+//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,10 +95,14 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel::class.java)
         addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
         viewModel = HomeViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
+        getLastLocation()
+        requestPermissions()
+        getCurrentWeather()
+        initHoursRecycler()
+        initWeekRecycler()
     }
 
     fun getCurrentWeather() {
-
         viewModel.weather.observe(requireActivity()) {
             if (it != null) {
                 updateUIWithWeatherData(it)
@@ -117,53 +119,53 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun getTodayTemp(weather: OpenWeather) {
-        binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}"
+        binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}°C"
         binding.todayTempStatusTxt.text = weather.current.weather[0].description
         binding.todayTempStatusIcon.setImageResource(Utility.getWeatherIcon(weather.current.weather[0].icon))
-        binding.pressureValueTxt.text = "${weather.current.pressure.toInt()} hPa"
-        binding.humidityValueTxt.text = "${weather.current.humidity.toInt()} %"
+        binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
+        binding.humidityValueTxt.text = "${weather.current.humidity} %"
         binding.windValueTxt.text = "${weather.current.windSpeed} m/s"
-        binding.cloudValueTxt.text = "${weather.current.clouds.toInt()} m"
-        binding.UVValueTxt.text = "${weather.current.uvi} %"
-        binding.visibilityValueTxt.text = "${weather.current.visibility.toInt()} %"
+        binding.cloudValueTxt.text = "${weather.current.clouds} m"
+        binding.UVValueTxt.text = "${weather.current.uvi.toLong()}%"
+        binding.visibilityValueTxt.text = "${weather.current.visibility} %"
         binding.homeDate.text = Utility.timeStampToDate(weather.current.dt)
 
     }
 
 
     fun initHoursRecycler() {
-        binding.todayTempRecycler
         todayHoursAdapter = TodayTempHoursAdapter(listOf<Hourly>(), context)
         binding.todayTempRecycler.setHasFixedSize(true)
         binding.todayTempRecycler.apply {
-            this.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
             this.adapter = todayHoursAdapter
+            layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         }
     }
 
     fun initWeekRecycler() {
-        binding.allWeekTempRecycler
         weekTempAdapter = WeekTempAdapter(listOf<Daily>(), context)
         binding.allWeekTempRecycler.setHasFixedSize(true)
         binding.allWeekTempRecycler.apply {
-            this.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             this.adapter = weekTempAdapter
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
     }
 
     private val mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            val mLastLocation: Location? = locationResult.lastLocation
-            if (mLastLocation != null) {
+            val mLastLocation: Location = locationResult.lastLocation
+           // if (mLastLocation != null) {
                 latitude = mLastLocation.latitude
                 longitude = mLastLocation.longitude
+                Log.i("mariam", "onLocationResult: $latitude and $longitude")
+                viewModel.getCurrentTemp(latitude, longitude, lang, unit)
                 val address = addressGeocoder.getFromLocation(latitude, longitude, 1)
                 if (address != null) {
                     binding.locationName.text =
                         "${address[0].subAdminArea}, ${address[0].adminArea}"
                 }
-            }
+            //}
         }
 
     }
@@ -243,30 +245,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun getLastLocation(): Unit {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
-                fusedClient.lastLocation.addOnCompleteListener { task ->
-                    var location: Location? = task.result
-                    if (location == null) {
-                        newLocation()
-                    } else {
-                        try {
-                            latitude = location.latitude
-                            longitude = location.longitude
-                            viewModel.getCurrentTemp(latitude, longitude, lang, unit)
-                            val address = addressGeocoder.getFromLocation(
-                                location.latitude,
-                                location.longitude,
-                                1
-                            )
-                            binding.locationName.text =
-                                "${address?.get(0)!!.subAdminArea}, ${address[0].adminArea}"
-                            Log.i("mariam", "getLastLocation: ${location.longitude} ${location.latitude} ")
-                        } catch (e: Exception) {
-                            val snackBar =
-                                Snackbar.make(binding.root, "${e.message}", Snackbar.LENGTH_LONG)
-                            snackBar.show()
-                        }
-                    }
-                }
+                newLocation()
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -281,28 +260,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-//    @SuppressLint("MissingPermission")
-//    private fun getLastLocation() {
-//
-//        if (checkPermissions()) {
-//            if (isLocationEnabled()) {
-//                fusedClient.lastLocation.addOnCompleteListener { task ->
-//                    var location: Location? = task.result
-//                     newLocation()
-//                    Log.i("mariam", location?.latitude.toString())
-//                    if (location != null) {
-//                        viewModel.getCurrentTemp(latitude, longitude, lang, unit)
-//                    }
-//
-//                }
-//            } else {
-//                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//                startActivity(intent)
-//            }
-//        } else {
-//            requestPermissions()
-//        }
-//    }
+
 
     @SuppressLint("MissingPermission")
     private fun newLocation() {
@@ -313,6 +271,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         locationRequest.numUpdates = 1
         fusedClient = LocationServices.getFusedLocationProviderClient(requireContext())
         fusedClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper()!!)
+
     }
 
 }

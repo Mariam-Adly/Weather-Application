@@ -1,16 +1,13 @@
 package com.example.weatherapplication.favorite.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapplication.datasource.repo.WeatherRepoInterface
 import com.example.weatherapplication.model.FavoriteWeather
-import com.example.weatherapplication.model.OpenWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class FavoriteViewModel(val repo : WeatherRepoInterface) : ViewModel() {
 
@@ -19,7 +16,9 @@ class FavoriteViewModel(val repo : WeatherRepoInterface) : ViewModel() {
 
     fun getFavPlaces():LiveData<List<FavoriteWeather>>{
         viewModelScope.launch(Dispatchers.IO) {
-           favWeather = repo.getAllFavoriteWeather()
+
+
+            favWeather = repo.getAllFavoriteWeather()
         }
         return favWeather
     }
