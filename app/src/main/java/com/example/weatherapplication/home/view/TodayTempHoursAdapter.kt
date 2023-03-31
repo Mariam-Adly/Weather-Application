@@ -18,12 +18,12 @@ class TodayTempHoursAdapter(
     var context: Context?,
 ) : RecyclerView.Adapter<TodayTempHoursAdapter.ViewHolder>(){
 
-    var languageShared = context?.getSharedPreferences("Language", Context.MODE_PRIVATE)
-    var langu = languageShared?.getString(Utility.Language_Key, "en")!!
-    var unitsShared = context?.getSharedPreferences("Units", Context.MODE_PRIVATE)
-    var unit = unitsShared?.getString(Utility.TEMP_KEY,"metric")!!
+//    var languageShared = context?.getSharedPreferences("Language", Context.MODE_PRIVATE)
+//    var langu = languageShared?.getString(Utility.Language_Key, "en")!!
+//    var unitsShared = context?.getSharedPreferences("Units", Context.MODE_PRIVATE)
+//    var unit = unitsShared?.getString(Utility.TEMP_KEY,"metric")!!
 
-    class ViewHolder(val binding: TodayTempBinding) : RecyclerView.ViewHolder(binding.root){
+    inner class ViewHolder(val binding: TodayTempBinding) : RecyclerView.ViewHolder(binding.root){
         init {
             binding.hourTempStatusIcon
             binding.hourTxt
@@ -43,38 +43,13 @@ class TodayTempHoursAdapter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TodayTempHoursAdapter.ViewHolder, position: Int) {
-        with(holder){
-            binding.hourTxt.text = Utility.timeStampToHour(hoursList[position].dt)
+            holder.binding.hourTxt.text = Utility.timeStampToHour(hoursList[position].dt)
+            holder.binding.hourTempDegreeTxt.text = "${hoursList[position].temp!!.toInt()} ℃"
+            holder.binding.hourTempStatusIcon.setImageResource(Utility.getWeatherIcon(hoursList[position].weather[0].icon!!))
 
-            if(langu == "en" && unit == "metric"){
-                binding.hourTempDegreeTxt.text = "${hoursList[position].temp!!.toInt()} ℃"
-            }else if(langu == "ar" && unit == "metric"){
-                binding.hourTempDegreeTxt.text = Utility.convertNumbersToArabic(hoursList[position].temp!!.toInt()) + " س°"
-            }else if(langu == "en" && unit == "imperial"){
-                binding.hourTempDegreeTxt.text = "${hoursList[position].temp!!.toInt()} ℉"
-            }else if(langu == "ar" && unit == "imperial"){
-                binding.hourTempDegreeTxt.text = Utility.convertNumbersToArabic(hoursList[position].temp!!.toInt()) +"ف° "
-            }else if(langu == "en" && unit == "standard"){
-                binding.hourTempDegreeTxt.text = "${hoursList[position].temp!!.toInt()} °K"
-            }else if(langu == "ar" && unit == "standard"){
-                binding.hourTempDegreeTxt.text = Utility.convertNumbersToArabic(hoursList[position].temp!!.toInt()) +" ك° "
-            }
-
-            binding.hourTempStatusIcon.setImageResource(Utility.getWeatherIcon(hoursList[position].weather[0].icon!!))
-            Log.i("mariam", "onBindViewHolder: ${Utility.timeStampToHourOneNumber(hoursList[position].dt)} and locale : ${LocalDateTime.now().hour.minus(12).toLong()}")
-           /* if(LocalDateTime.now().hour > 12) {
-                if (Utility.timeStampToHourOneNumber(hoursList[position].dt) != LocalDateTime.now().hour.minus(12).toString()) {
-                    binding.tempHour.visibility = View.GONE
-                }
-            }else{
-                if (Utility.timeStampToHourOneNumber(hoursList[position].dt) != LocalDateTime.now().hour.toString()) {
-                    binding.tempHour.visibility = View.GONE
-                }
-            }*/
-        }
     }
 
     override fun getItemCount(): Int {
-        return hoursList.size
+        return hoursList.size -1
     }
 }

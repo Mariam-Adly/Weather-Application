@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.weatherapplication.R
+import com.example.weatherapplication.databinding.FragmentAlertBinding
+import com.example.weatherapplication.databinding.FragmentFavoriteBinding
+import com.example.weatherapplication.favorite.view.FavoriteFragmentDirections
 
 class AlertFragment : Fragment() {
-
-
+    lateinit var binding : FragmentAlertBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -20,7 +23,16 @@ class AlertFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_alert, container, false)
+        binding = FragmentAlertBinding.inflate(inflater, container, false)
+        var view: View = binding.root
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.addAlert.setOnClickListener {
+            AddNewAlertFragment().show(requireActivity().supportFragmentManager,"MyAlertDialog")
+        }
     }
 
 

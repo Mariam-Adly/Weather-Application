@@ -74,7 +74,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
     private lateinit var favoriteWeather: FavoriteWeather
     private lateinit var favoriteViewModel: FavoriteViewModel
     private lateinit var favoriteViewModelFactory: FavoriteViewModelFactory
-    var isFav: Boolean = true
+
 
     private val callback = OnMapReadyCallback { googleMap ->
         Log.i("mariam", ": OnMapReadyCallback : $mLastLocation ")
@@ -171,14 +171,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    protected fun buildGoogleApiClient() {
-        mGoogleApiClient = GoogleApiClient.Builder(requireContext())
-            .addConnectionCallbacks(this)
-            .addOnConnectionFailedListener(this)
-            .addApi(LocationServices.API).build()
-        mGoogleApiClient!!.connect()
-    }
-
     override fun onLocationChanged(location: Location) {
         mLastLocation = location
         if (mCurrLocationMarker != null) {
@@ -221,11 +213,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     fun getAddressAndDateForLocation(lat : Double, lon : Double) : String{
         //GPSLat GPSLong
-        var addressGeocoder : Geocoder = Geocoder(requireContext(), Locale.getDefault())
+         addressGeocoder  = Geocoder(requireContext(), Locale.getDefault())
         try {
             var myAddress : List<Address> = addressGeocoder.getFromLocation(lat, lon, 2)!!
             if(myAddress.isNotEmpty()){
-                return "${myAddress[0].subAdminArea},${myAddress[0].adminArea}"
+                return "${myAddress[0].adminArea},${myAddress[0].countryName}"
             }
         }catch (e : IOException){
             e.printStackTrace()

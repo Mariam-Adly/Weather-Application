@@ -29,10 +29,10 @@ class HomeViewModel(val repo : WeatherRepoInterface) : ViewModel(){
             if (response.isSuccessful){
                 withContext(Dispatchers.Main){
                     _mutableWeather.value = response.body()
-                    Log.d("jessie", "getCurrentTemp: success ${response.body()}")
+                    Log.d("mariam", "getCurrentTemp: success ${response.body()}")
                 }
             }else{
-                Log.d("jessie", "getCurrentTemp: error ${response.errorBody()}")
+                Log.d("mariam", "getCurrentTemp: error ${response.errorBody()}")
             }
 
         }

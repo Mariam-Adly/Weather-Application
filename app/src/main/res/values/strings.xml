@@ -33,6 +33,14 @@
     <string name="cancel_btn">Cancel</string>
     <string name="locationInMap">locationInMap</string>
     <string name="locationSearchInMap">locationSearchInMap</string>
+    <string name="selected_location">Selected Location</string>
+    <string name="StartDate">Start Date</string>
+    <string name="EndDate">End Date</string>
+    <string name="exampleDate">ex:10/4/2023</string>
+    <string name="time">Time</string>
+    <string name="exampleTime">ex: 05:30</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

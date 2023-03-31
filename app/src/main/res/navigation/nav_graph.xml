@@ -11,8 +11,8 @@
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" >
         <action
-            android:id="@+id/action_navigation_fav_to_navigation_home"
-            app:destination="@id/homeFragment" />
+            android:id="@+id/action_favoriteFragment_to_favWeatherDetailsFragment"
+            app:destination="@id/favWeatherDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/alertFragment"
@@ -29,4 +29,14 @@
         android:name="com.example.weatherapplication.home.view.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/favWeatherDetailsFragment"
+        android:name="com.example.weatherapplication.favWeatherDetails.view.FavWeatherDetailsFragment"
+        android:label="FavWeatherDetailsFragment" >
+        <argument
+            android:name="favPlace"
+            app:argType="com.example.weatherapplication.model.FavoriteWeather"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 </navigation>

@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -94,5 +95,6 @@ dependencies {
     // For developers using AndroidX in their applications
     implementation 'pub.devrel:easypermissions:3.0.0'
     //implementation 'com.google.android.libraries.places:places:3.0.0'
+
 
 }
