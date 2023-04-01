@@ -2,9 +2,12 @@ package com.example.weatherapplication.datasource.database
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
-import com.example.weatherapplication.model.WeatherAlert
 import kotlinx.coroutines.flow.Flow
 
 interface LocalSourceInterface {
@@ -16,4 +19,9 @@ interface LocalSourceInterface {
    suspend fun deleteFavoritePlace(favoriteWeather: FavoriteWeather)
    suspend fun insertFavoritePlace(favoriteWeather: FavoriteWeather)
    suspend fun updateFavoritePlace(favoriteWeather: FavoriteWeather)
+   suspend fun getAlerts(): LiveData<List<Alert>>
+
+    suspend fun insertAlert(myAlert: Alert)
+
+    suspend fun deleteAlerts(myAlert: Alert)
 }

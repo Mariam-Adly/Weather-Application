@@ -2,9 +2,9 @@ package com.example.weatherapplication.datasource.repo
 
 
 import androidx.lifecycle.LiveData
+import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
-import com.example.weatherapplication.model.WeatherAlert
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
@@ -22,4 +22,9 @@ interface WeatherRepoInterface {
     suspend fun insertFavoritePlace(favoriteWeather: FavoriteWeather)
     suspend fun updateFavoritePlace(favoriteWeather: FavoriteWeather)
     suspend fun getFavWeatherData(favWeather : FavoriteWeather) :Response<OpenWeather>
+    suspend fun getAlerts(): LiveData<List<Alert>>
+
+    suspend fun insertAlert(myAlert: Alert)
+
+    suspend fun deleteAlerts(myAlert: Alert)
 }

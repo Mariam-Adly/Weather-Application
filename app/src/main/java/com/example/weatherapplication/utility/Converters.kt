@@ -61,6 +61,7 @@ class Converters {
     }
 
 
+
     @TypeConverter
     fun fromWeatherToString(weather: Weather): String {
         return Gson().toJson(weather)

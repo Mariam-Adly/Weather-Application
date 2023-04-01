@@ -28,6 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.example.weatherapplication.MainActivity
 import com.example.weatherapplication.R
+import com.example.weatherapplication.alert.view.AddNewAlertFragment
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -74,6 +75,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
     private lateinit var favoriteWeather: FavoriteWeather
     private lateinit var favoriteViewModel: FavoriteViewModel
     private lateinit var favoriteViewModelFactory: FavoriteViewModelFactory
+    var key : Int = 0
 
 
     private val callback = OnMapReadyCallback { googleMap ->
@@ -94,6 +96,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val bundle= activity?.intent?.extras
+        if (bundle != null) {
+            key=bundle.getInt("key")
+        }
         favoriteViewModelFactory = FavoriteViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
         favoriteViewModel = ViewModelProvider(this,favoriteViewModelFactory).get(FavoriteViewModel::class.java)
         fusedLocation = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -115,10 +121,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
             searchLocation()
         }
         binding.saveFavBtn.setOnClickListener {
-            favoriteViewModel.insertFavoritePlace(favoriteWeather)
-            requireActivity().finish()
+            if (key == 3) {
+                AddNewAlertFragment.address =getAddressAndDateForLocation(latLng!!.latitude, latLng!!.longitude)
+                AddNewAlertFragment.lat = latLng!!.latitude
+                AddNewAlertFragment.lon = latLng!!.longitude
+                requireActivity().finish()
+            } else {
+                favoriteViewModel.insertFavoritePlace(favoriteWeather)
+                requireActivity().finish()
+            }
         }
         return view
+
     }
 
 
@@ -243,7 +257,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
             }
             val address = addressList!![0]
              latLng = LatLng(address.latitude,address.longitude)
-
             favoriteWeather = FavoriteWeather(getAddressAndDateForLocation(latLng!!.latitude,latLng!!.longitude),latLng!!.latitude,latLng!!.longitude)
             latLng ?.let {
                   mMap!!.addMarker(MarkerOptions().position(it).title(location))

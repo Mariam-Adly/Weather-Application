@@ -138,7 +138,7 @@
                     android:fontFamily="@font/merriweathersans_bold"
                     android:hint="@string/exampleDate"
                     android:padding="8dp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textColorHint="@color/black"
                     android:textSize="12sp" />
             </LinearLayout>

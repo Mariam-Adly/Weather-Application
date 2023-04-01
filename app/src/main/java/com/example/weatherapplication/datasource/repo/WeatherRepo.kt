@@ -4,6 +4,7 @@ package com.example.weatherapplication.datasource.repo
 import androidx.lifecycle.LiveData
 import com.example.weatherapplication.datasource.database.LocalSourceInterface
 import com.example.weatherapplication.datasource.network.RemoteSource
+import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
 import retrofit2.Response
@@ -57,6 +58,18 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
 
     override suspend fun getFavWeatherData(favWeather: FavoriteWeather): Response<OpenWeather> {
         return remoteSource.getFavWeatherData(favWeather)
+    }
+
+    override suspend fun getAlerts(): LiveData<List<Alert>> {
+        return localSource.getAlerts()
+    }
+
+    override suspend fun insertAlert(myAlert: Alert) {
+        localSource.insertAlert(myAlert)
+    }
+
+    override suspend fun deleteAlerts(myAlert: Alert) {
+        localSource.deleteAlerts(myAlert)
     }
 
 

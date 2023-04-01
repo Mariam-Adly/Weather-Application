@@ -1,11 +1,10 @@
 package com.example.weatherapplication.datasource.database
 
-
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
-import com.example.weatherapplication.utility.Converters
 
 @Dao
 interface WeatherDao {
@@ -26,4 +25,13 @@ interface WeatherDao {
 
     @Update
     fun updateFavoritePlace(favoriteWeather: FavoriteWeather)
+
+    @Query("SELECT * FROM Alert")
+    fun getAlerts(): LiveData<List<Alert>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+     fun insertAlert(myAlert: Alert)
+
+    @Delete
+     fun deleteAlerts(myAlert: Alert)
 }
