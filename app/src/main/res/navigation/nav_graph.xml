@@ -39,4 +39,14 @@
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.weatherapplication.map.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" />
+    <dialog
+        android:id="@+id/addNewAlertFragment"
+        android:name="com.example.weatherapplication.alert.view.AddNewAlertFragment"
+        android:label="fragment_add_new_alert"
+        tools:layout="@layout/fragment_add_new_alert" />
 </navigation>

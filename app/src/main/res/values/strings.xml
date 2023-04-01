@@ -41,6 +41,10 @@
     <string name="exampleTime">ex: 05:30</string>
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
+    <string name="to">To</string>
+    <string name="city_name">City Name</string>
+    <string name="time_alert">12:00Am</string>
+    <string name="at">At</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

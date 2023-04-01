@@ -2,6 +2,7 @@ package com.example.weatherapplication.datasource.database
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
 
@@ -32,6 +33,18 @@ class LocalSourceImpl(private val context: Context):LocalSourceInterface {
 
     override suspend fun updateFavoritePlace(favoriteWeather: FavoriteWeather) {
        weatherDao.updateFavoritePlace(favoriteWeather)
+    }
+
+    override suspend fun getAlerts(): LiveData<List<Alert>> {
+       return weatherDao.getAlerts()
+    }
+
+    override suspend fun insertAlert(myAlert: Alert) {
+       weatherDao.insertAlert(myAlert)
+    }
+
+    override suspend fun deleteAlerts(myAlert: Alert) {
+        weatherDao.deleteAlerts(myAlert)
     }
 
 
