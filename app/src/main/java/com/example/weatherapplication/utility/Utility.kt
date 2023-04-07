@@ -47,20 +47,25 @@ class Utility {
             "حرارة"
         )
 
-        fun timeStampToDate (dt : Long) : String{
+        fun timeStampToDate (dt: Long,lang: String) : String{
             var date : Date = Date(dt * 1000)
-            var dateFormat : DateFormat = SimpleDateFormat("MMM d, yyyy")
+            var dateFormat : DateFormat = SimpleDateFormat("MMM d, yyyy",Locale(lang))
             return dateFormat.format(date)
         }
-        fun timeStampToDay(dt: Long) : String{
+        fun timeStampToDay(dt: Long,lang: String) : String{
             var date: Date = Date(dt * 1000)
-            var dateFormat : DateFormat = SimpleDateFormat("EEEE")
+            var dateFormat : DateFormat = SimpleDateFormat("EEEE", Locale(lang))
             return dateFormat.format(date)
         }
-        fun timeStampToHour(dt : Long) : String{
-            var date: Date = Date(dt * 1000)
-            var dateFormat : DateFormat = SimpleDateFormat("h:mm a")
-            return dateFormat.format(date)
+        fun timeStampToHour(dt : Long,lang : String) : String{
+            val date = Date(dt * 1000)
+            val format = SimpleDateFormat("h:mm a", Locale(lang))
+            return format.format(date)
+        }
+         fun getDateMillis(date: String): Long {
+            val f = SimpleDateFormat("dd/MM/yyyy")
+            val d: Date = f.parse(date)
+            return (d.time).div(1000)
         }
         fun timeStampToHourOneNumber(dt : Long) : String{
             var date: Date = Date(dt * 1000)
@@ -176,6 +181,14 @@ class Utility {
         }
 
         fun convertNumbersToArabic(value: Double): String {
+            return (value.toString() + "")
+                .replace("1".toRegex(), "١").replace("2".toRegex(), "٢")
+                .replace("3".toRegex(), "٣").replace("4".toRegex(), "٤")
+                .replace("5".toRegex(), "٥").replace("6".toRegex(), "٦")
+                .replace("7".toRegex(), "٧").replace("8".toRegex(), "٨")
+                .replace("9".toRegex(), "٩").replace("0".toRegex(), "٠")
+        }
+        fun convertNumbersToArabic(value: String): String {
             return (value.toString() + "")
                 .replace("1".toRegex(), "١").replace("2".toRegex(), "٢")
                 .replace("3".toRegex(), "٣").replace("4".toRegex(), "٤")

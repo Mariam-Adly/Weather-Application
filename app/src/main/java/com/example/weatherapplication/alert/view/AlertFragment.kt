@@ -1,6 +1,9 @@
 package com.example.weatherapplication.alert.view
 
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherapplication.MainActivity
 import com.example.weatherapplication.R
 import com.example.weatherapplication.alert.viewmodel.AlertViewModel
 import com.example.weatherapplication.alert.viewmodel.AlertViewModelFactory
@@ -20,6 +24,7 @@ import com.example.weatherapplication.datasource.network.RemoteSourceImpl
 import com.example.weatherapplication.datasource.repo.WeatherRepo
 import com.example.weatherapplication.favorite.view.FavoriteAdapter
 import com.example.weatherapplication.favorite.view.FavoriteFragmentDirections
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class AlertFragment : Fragment() {
     lateinit var binding : FragmentAlertBinding
@@ -31,8 +36,8 @@ class AlertFragment : Fragment() {
 
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         initAlertRecycler()
         getAlert()
     }
@@ -44,16 +49,38 @@ class AlertFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentAlertBinding.inflate(inflater, container, false)
         var view: View = binding.root
-        alertFactory = AlertViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
+        alertFactory = AlertViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()), LocalSourceImpl(requireContext()),requireContext()))
         alertViewModel = ViewModelProvider(this,alertFactory).get(AlertViewModel::class.java)
         return view
+
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.addAlert.setOnClickListener {
+            //checkOverlayPermission()
             AddNewAlertFragment().show(requireActivity().supportFragmentManager,"MyAlertDialog")
+        }
+        initAlertRecycler()
+        getAlert()
+    }
+
+    private fun checkOverlayPermission() {
+        if (!Settings.canDrawOverlays(requireContext())) {
+            val alertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+            alertDialogBuilder.setTitle("Weather Alerts")
+                .setMessage("features")
+                .setPositiveButton("ok") { dialog: DialogInterface, i: Int ->
+                    var myIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                    startActivity(myIntent)
+                    dialog.dismiss()
+                }.setNegativeButton(
+                    "Cancel"
+                ) { dialog: DialogInterface, i: Int ->
+                    dialog.dismiss()
+                    startActivity(Intent(requireContext(), MainActivity::class.java))
+                }.show()
         }
     }
 

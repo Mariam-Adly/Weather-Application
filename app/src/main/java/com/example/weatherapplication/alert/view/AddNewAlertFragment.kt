@@ -1,41 +1,56 @@
 package com.example.weatherapplication.alert.view
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
+import androidx.work.*
+import com.example.weatherapplication.MainActivity
 import com.example.weatherapplication.alert.viewmodel.AlertViewModel
 import com.example.weatherapplication.alert.viewmodel.AlertViewModelFactory
 import com.example.weatherapplication.databinding.FragmentAddNewAlertBinding
 import com.example.weatherapplication.datasource.database.LocalSourceImpl
 import com.example.weatherapplication.datasource.network.RemoteSourceImpl
 import com.example.weatherapplication.datasource.repo.WeatherRepo
-import com.example.weatherapplication.favorite.view.FavoriteFragmentDirections
-import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModel
-import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.weatherapplication.map.MapsActivity
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.utility.Utility
+import com.example.weatherapplication.workers.OneTimeWork
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.function.DoubleBinaryOperator
-import kotlin.math.min
+import java.util.concurrent.TimeUnit
 
 class AddNewAlertFragment : DialogFragment() {
 
     lateinit var binding: FragmentAddNewAlertBinding
-    var date : String = ""
-    var timeFormat : String = ""
+    var startDate  = 0L
+    var endDate = 0L
+    var timeFormat  = 0L
     lateinit var myAlert : Alert
     lateinit var alertViewModel: AlertViewModel
     lateinit var alertFactory:AlertViewModelFactory
+    var startDay : Int =0
+    var startMonth : Int =0
+    var startYear : Int =0
+    var endDay : Int =0
+    var endMonth : Int =0
+    var endYear : Int =0
+    var hours : Int =0
+    var mins : Int =0
+    lateinit var language : String
 
     companion object{
        var address : String = ""
@@ -55,9 +70,10 @@ class AddNewAlertFragment : DialogFragment() {
         // Inflate the layout for this fragment
         binding = FragmentAddNewAlertBinding.inflate(inflater, container, false)
         var view: View = binding.root
-        alertFactory = AlertViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
+        alertFactory = AlertViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()), LocalSourceImpl(requireContext()),requireContext()))
         alertViewModel = ViewModelProvider(this,alertFactory).get(AlertViewModel::class.java)
         return view
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,11 +87,11 @@ class AddNewAlertFragment : DialogFragment() {
             startActivity(intent)
         }
         binding.tvAlertStartDate.setOnClickListener {
-            selectDate(binding.tvAlertStartDate)
+            selectStartDate(binding.tvAlertStartDate)
         }
 
         binding.tvAlertEndDate.setOnClickListener {
-            selectDate(binding.tvAlertEndDate)
+            selectEndDate(binding.tvAlertEndDate)
         }
         binding.tvAlertTime.setOnClickListener {
             selectTime(binding.tvAlertTime)
@@ -83,21 +99,21 @@ class AddNewAlertFragment : DialogFragment() {
         binding.alertCancelBtn.setOnClickListener {
             dismiss()
         }
+
         binding.alertSubmitBtn.setOnClickListener {
-            val current = Calendar.getInstance()
-            setFirstUi(current.timeInMillis)
-            alertViewModel.insertAlert(myAlert)
-            dismiss()
+            myAlert = Alert(timeFormat,startDate, endDate, lat, lon, address)
+                alertViewModel.setAlarm(myAlert)
+                setWorker(myAlert)
+                dismiss()
         }
+        val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
+        language = sharedPreferences.getString("myLang","")!!
+
 
     }
 
 
-    fun setFirstUi(current: Long) {
-        val current = current.div(1000L)
-        val dateplus = (86400L) + current
-        myAlert = Alert(current,current,dateplus,0.0,0.0, address)
-    }
+
     override fun onStart() {
         super.onStart()
         if(address.isNotEmpty()){
@@ -105,38 +121,108 @@ class AddNewAlertFragment : DialogFragment() {
         }
     }
 
-    fun selectDate(textView: TextView){
-        var format = SimpleDateFormat("dd MMM, YYYY", Locale.US)
+    fun selectStartDate(textView: TextView){
         val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
+         startYear = calendar.get(Calendar.YEAR)
+         startMonth = calendar.get(Calendar.MONTH)
+         startDay = calendar.get(Calendar.DAY_OF_MONTH)
         val datePicker = DatePickerDialog(requireContext(),DatePickerDialog.OnDateSetListener{
                 view, year, month, dayOfMonth ->
             calendar.set(Calendar.YEAR,year)
             calendar.set(Calendar.MONTH,month)
             calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth)
-            date = format.format(calendar.time)
-            textView.text= date
+            var month = month
+            month +=1
+            val date = "$dayOfMonth/$month/$year"
+            startDate = Utility.getDateMillis(date)
+            textView.text= Utility.timeStampToDate(startDate,language)
+            startYear = year
+            startMonth = month
+            startDay = dayOfMonth
         },
-            year,month,day
+            startYear,startMonth,startDay
         )
         datePicker.datePicker.minDate = System.currentTimeMillis() - 1000
          datePicker.show()
     }
 
+    fun selectEndDate(textView: TextView){
+        val calendar = Calendar.getInstance()
+        endYear = calendar.get(Calendar.YEAR)
+        endMonth = calendar.get(Calendar.MONTH)
+        endDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val datePicker = DatePickerDialog(requireContext(),DatePickerDialog.OnDateSetListener{
+                view, year, month, dayOfMonth ->
+            calendar.set(Calendar.YEAR,year)
+            calendar.set(Calendar.MONTH,month)
+            calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+            var month = month
+            month +=1
+            val date = "$dayOfMonth/$month/$year"
+             endDate = Utility.getDateMillis(date)
+            textView.text= Utility.timeStampToDate(endDate,language)
+            endYear = year
+            endMonth = month
+           endDay = dayOfMonth
+        },
+            endYear,endMonth,endDay
+        )
+        datePicker.datePicker.minDate = System.currentTimeMillis() - 1000
+        datePicker.show()
+    }
     fun selectTime(textView: TextView){
-        var format = SimpleDateFormat("HH:mm")
         val time = Calendar.getInstance()
-        val hours = time.get(Calendar.HOUR_OF_DAY)
-        val mins = time.get(Calendar.MINUTE)
-        val timePicker = TimePickerDialog.OnTimeSetListener { timePick, hour, minute ->
+         hours = time.get(Calendar.HOUR_OF_DAY)
+         mins = time.get(Calendar.MINUTE)
+        val timePicker = TimePickerDialog(requireContext(), { view, hour, minute ->
             time.set(Calendar.HOUR_OF_DAY, hour)
             time.set(Calendar.MINUTE,minute)
-            timeFormat = format.format(time.time)
-            textView.text= timeFormat
-        }
-        TimePickerDialog(requireContext(),timePicker,hours, mins,true).show()
+            timeFormat = (TimeUnit.MINUTES.toSeconds(minute.toLong()) + TimeUnit.HOURS.toSeconds(hour.toLong()))
+              timeFormat = timeFormat.minus(3600L * 2)
+            textView.text= Utility.timeStampToHour(timeFormat,language)
+            hours = hour
+            mins = minute
+        }, hours,mins,false)
+        timePicker.show()
     }
+
+
+//    private fun setWorker() {
+//        val constraints = Constraints.Builder()
+//            .setRequiresBatteryNotLow(true)
+//            .build()
+//
+//        val periodicWorkRequest = PeriodicWorkRequest.Builder(
+//            MyPeriodicWorkJop::class.java, 24, TimeUnit.HOURS)
+//            .setConstraints(constraints)
+//            .build()
+//
+//        WorkManager.getInstance().enqueueUniquePeriodicWork(
+//            "MyWorkManager", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest)
+//    }
+
+    fun setWorker(myAlert: Alert){
+        val calendar = Calendar.getInstance()
+        val currentTime = calendar.timeInMillis.div(1000)
+        val pickTime = myAlert.Time
+        val delay = ((currentTime - pickTime)/60/60/60/60)-115
+        Log.i("mariam", "setWorker: $delay")
+        val data = Data.Builder()
+        data.putDouble("lat", myAlert.lat)
+        data.putDouble("lon", myAlert.lon)
+        data.putString("address", myAlert.AlertCityName)
+        data.putLong("startDate", myAlert.startDay)
+        data.putLong("endDate", myAlert.endDay)
+        var stringAlert = Gson().toJson(myAlert)
+        data.putString("alert", stringAlert)
+        val workRequest = PeriodicWorkRequestBuilder<OneTimeWork>(1,TimeUnit.DAYS)
+            .setInitialDelay(delay, TimeUnit.SECONDS)
+            .addTag(myAlert.startDay.toString() +myAlert.endDay.toString())
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setInputData(data.build())
+            .build()
+        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(myAlert.startDay.toString()+myAlert.endDay.toString(),ExistingPeriodicWorkPolicy.REPLACE,workRequest)
+    }
+
 
 }

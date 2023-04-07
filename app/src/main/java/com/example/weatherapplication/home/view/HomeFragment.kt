@@ -2,9 +2,11 @@ package com.example.weatherapplication.home.view
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
@@ -35,11 +37,6 @@ import com.example.weatherapplication.model.OpenWeather
 import com.example.weatherapplication.utility.TrackingUtility
 import com.example.weatherapplication.utility.Utility
 import com.google.android.gms.location.*
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.*
@@ -56,8 +53,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var fusedClient: FusedLocationProviderClient
     var latitude: Double = 0.0
     var longitude: Double = 0.0
-    var lang: String = "eng"
-    var unit: String = "metric"
+    lateinit var lang: String
+    lateinit var unit: String
     lateinit var addressGeocoder: Geocoder
     lateinit var progressDialog: ProgressDialog
 
@@ -90,11 +87,16 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModelFactory =
-            HomeViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(),LocalSourceImpl(requireContext())))
+            HomeViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()),LocalSourceImpl(requireContext()),requireContext()))
         viewModel =
             ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel::class.java)
+       // Locale.setDefault(Locale(lang))
         addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
-        viewModel = HomeViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
+        viewModel = HomeViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()), LocalSourceImpl(requireContext()),requireContext()))
+        val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
+        lang = sharedPreferences.getString("myLang","")!!
+        val unitShared = requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
+        unit = unitShared.getString("units","metric")!!
         getLastLocation()
         requestPermissions()
         getCurrentWeather()
@@ -119,16 +121,66 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun getTodayTemp(weather: OpenWeather) {
-        binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}°C"
         binding.todayTempStatusTxt.text = weather.current.weather[0].description
         binding.todayTempStatusIcon.setImageResource(Utility.getWeatherIcon(weather.current.weather[0].icon))
-        binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
-        binding.humidityValueTxt.text = "${weather.current.humidity} %"
-        binding.windValueTxt.text = "${weather.current.windSpeed} m/s"
-        binding.cloudValueTxt.text = "${weather.current.clouds} m"
-        binding.UVValueTxt.text = "${weather.current.uvi.toLong()}%"
-        binding.visibilityValueTxt.text = "${weather.current.visibility} %"
-        binding.homeDate.text = Utility.timeStampToDate(weather.current.dt)
+        if(lang == "eng" && unit == "metric") {
+            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
+            binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}°C"
+            binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
+            binding.humidityValueTxt.text = "${weather.current.humidity} %"
+            binding.windValueTxt.text = "${weather.current.windSpeed} m/s"
+            binding.cloudValueTxt.text = "${weather.current.clouds} m"
+            binding.UVValueTxt.text = "${weather.current.uvi.toLong()}%"
+            binding.visibilityValueTxt.text = "${weather.current.visibility} %"
+        }else if(lang == "ar" && unit == "metric"){
+            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
+            binding.todayTempDegreeTxt.text = "${Utility.convertNumbersToArabic(weather.current.temp.toInt())}س°"
+            binding.pressureValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.pressure)} هـ ب أ"
+            binding.humidityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.humidity)} %"
+            binding.windValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.windSpeed)} م/ث"
+            binding.cloudValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.clouds)}   م"
+            binding.UVValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.uvi)}%"
+            binding.visibilityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.visibility)} %"
+        }else if(lang == "eng" && unit == "imperial"){
+            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
+            binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}℉"
+            binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
+            binding.humidityValueTxt.text = "${weather.current.humidity} %"
+            binding.windValueTxt.text = "${weather.current.windSpeed} km/h"
+            binding.cloudValueTxt.text = "${weather.current.clouds}km"
+            binding.UVValueTxt.text = "${weather.current.uvi.toLong()}%"
+            binding.visibilityValueTxt.text = "${weather.current.visibility} %"
+        }
+        else if(lang == "ar" && unit == "imperial"){
+            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
+            binding.todayTempDegreeTxt.text = "${Utility.convertNumbersToArabic(weather.current.temp.toInt())}ف°"
+            binding.pressureValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.pressure)} هـ ب أ"
+            binding.humidityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.humidity)} %"
+            binding.windValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.windSpeed)}كم/س"
+            binding.cloudValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.clouds)}  كم "
+            binding.UVValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.uvi)}%"
+            binding.visibilityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.visibility)} %"
+        }
+        else if(lang == "eng" && unit == "standard"){
+            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
+            binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}°K"
+            binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
+            binding.humidityValueTxt.text = "${weather.current.humidity} %"
+            binding.windValueTxt.text = "${weather.current.windSpeed} m/s"
+            binding.cloudValueTxt.text = "${weather.current.clouds} m"
+            binding.UVValueTxt.text = "${weather.current.uvi.toLong()}%"
+            binding.visibilityValueTxt.text = "${weather.current.visibility} %"
+        }
+        else if(lang == "ar" && unit == "standard"){
+            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
+            binding.todayTempDegreeTxt.text = "${Utility.convertNumbersToArabic(weather.current.temp.toInt())}ك°"
+            binding.pressureValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.pressure)} هـ ب أ"
+            binding.humidityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.humidity)} %"
+            binding.windValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.windSpeed)} م/ث"
+            binding.cloudValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.clouds)}   م"
+            binding.UVValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.uvi)}%"
+            binding.visibilityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.visibility)} %"
+        }
 
     }
 
@@ -156,6 +208,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             super.onLocationResult(locationResult)
             val mLastLocation: Location = locationResult.lastLocation
            // if (mLastLocation != null) {
+                Locale.setDefault(Locale(lang))
                 latitude = mLastLocation.latitude
                 longitude = mLastLocation.longitude
                 Log.i("mariam", "onLocationResult: $latitude and $longitude")

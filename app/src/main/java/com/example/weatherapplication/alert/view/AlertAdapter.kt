@@ -1,9 +1,9 @@
 package com.example.weatherapplication.alert.view
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapplication.R
 import com.example.weatherapplication.databinding.AlertItemBinding
@@ -15,7 +15,8 @@ import com.example.weatherapplication.utility.Utility
 class AlertAdapter (var alertList : List<Alert>,
 var context: Context) : RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
 
-
+    val sharedPreferences = context.getSharedPreferences("language", Activity.MODE_PRIVATE)
+    val language = sharedPreferences.getString("myLang","eng")
     class ViewHolder (val binding: AlertItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.imgDelete
@@ -40,10 +41,17 @@ var context: Context) : RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = alertList[position]
+        if(language == "eng"){
         holder.binding.cityName.text = item.AlertCityName
-        holder.binding.txtFrom.text = Utility.timeStampToDate(item.startDay)
-        holder.binding.txtTime.text = Utility.timeStampToHour(item.Time)
-        holder.binding.txtTo.text = Utility.timeStampToDate(item.endDay)
+        holder.binding.txtFrom.text = Utility.timeStampToDate(item.startDay,language)
+        holder.binding.txtTime.text = Utility.timeStampToHour(item.Time, language)
+        holder.binding.txtTo.text = Utility.timeStampToDate(item.endDay,language)
+        }else if(language == "ar"){
+            holder.binding.cityName.text = item.AlertCityName
+            holder.binding.txtFrom.text = Utility.timeStampToDate(item.startDay,language)
+            holder.binding.txtTime.text = Utility.timeStampToHour(item.Time, language)
+            holder.binding.txtTo.text = Utility.timeStampToDate(item.endDay,language)
+        }
 
     }
 }
