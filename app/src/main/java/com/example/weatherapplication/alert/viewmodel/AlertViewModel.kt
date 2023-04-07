@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapplication.datasource.repo.WeatherRepoInterface
 import com.example.weatherapplication.model.Alert
-import com.example.weatherapplication.model.FavoriteWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -29,9 +28,9 @@ class AlertViewModel (val repo : WeatherRepoInterface) : ViewModel(){
         }
     }
 
-    fun insertAlert(myAlert: Alert) {
+    fun setAlarm(myAlert: Alert) {
         viewModelScope.launch(Dispatchers.IO ) {
-            repo.insertAlert(myAlert)
+            repo.setAlarm(myAlert)
         }
     }
 

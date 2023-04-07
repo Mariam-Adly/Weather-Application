@@ -41,9 +41,9 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
         favoriteViewModelFactory =
             FavoriteViewModelFactory(
                 WeatherRepo.getInstance(
-                    RemoteSourceImpl.getInstance(),
+                    RemoteSourceImpl.getInstance(requireContext()),
                     LocalSourceImpl(requireContext())
-                ))
+                ,requireContext()))
         favoriteViewModel =
             ViewModelProvider(requireActivity(), favoriteViewModelFactory).get(FavoriteViewModel::class.java)
         return view

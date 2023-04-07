@@ -1,6 +1,7 @@
 package com.example.weatherapplication.model
 
 import androidx.room.Entity
+import java.io.Serializable
 
 @Entity(primaryKeys = ["startDay","endDay","Time"])
 data class Alert(
@@ -9,5 +10,5 @@ data class Alert(
     var endDay: Long,
     var lat: Double,
     var lon: Double,
-    var AlertCityName :String
-)
+    var AlertCityName :String,
+): Serializable

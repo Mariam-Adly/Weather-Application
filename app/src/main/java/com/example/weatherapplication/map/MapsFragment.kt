@@ -1,6 +1,7 @@
 package com.example.weatherapplication.map
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -76,6 +77,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
     private lateinit var favoriteViewModel: FavoriteViewModel
     private lateinit var favoriteViewModelFactory: FavoriteViewModelFactory
     var key : Int = 0
+    lateinit var lang:String
 
 
     private val callback = OnMapReadyCallback { googleMap ->
@@ -96,15 +98,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
+        lang = sharedPreferences.getString("myLang","")!!
         val bundle= activity?.intent?.extras
         if (bundle != null) {
             key=bundle.getInt("key")
         }
-        favoriteViewModelFactory = FavoriteViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(), LocalSourceImpl(requireContext())))
+        favoriteViewModelFactory = FavoriteViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()), LocalSourceImpl(requireContext()),requireContext()))
         favoriteViewModel = ViewModelProvider(this,favoriteViewModelFactory).get(FavoriteViewModel::class.java)
         fusedLocation = LocationServices.getFusedLocationProviderClient(requireActivity())
         addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
         fetchLocation()
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
@@ -120,6 +125,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
         binding.searchBtn.setOnClickListener {
             searchLocation()
         }
+
         binding.saveFavBtn.setOnClickListener {
             if (key == 3) {
                 AddNewAlertFragment.address =getAddressAndDateForLocation(latLng!!.latitude, latLng!!.longitude)
@@ -132,7 +138,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
             }
         }
         return view
-
     }
 
 
@@ -227,6 +232,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     fun getAddressAndDateForLocation(lat : Double, lon : Double) : String{
         //GPSLat GPSLong
+        Locale.setDefault(Locale(lang))
          addressGeocoder  = Geocoder(requireContext(), Locale.getDefault())
         try {
             var myAddress : List<Address> = addressGeocoder.getFromLocation(lat, lon, 2)!!
@@ -247,7 +253,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
         if(location == null || location == ""){
             Toast.makeText(requireContext(),"provide location",Toast.LENGTH_SHORT).show()
         }else{
-            val geoCoder = Geocoder(requireContext())
+            Locale.setDefault(Locale(lang))
+            val geoCoder = Geocoder(requireContext(), Locale.getDefault())
             try {
                 addressList = geoCoder.getFromLocationName(location,1)
 
