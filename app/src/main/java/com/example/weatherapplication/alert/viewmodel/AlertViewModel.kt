@@ -6,20 +6,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapplication.datasource.repo.WeatherRepoInterface
 import com.example.weatherapplication.model.Alert
+import com.example.weatherapplication.utility.ApiState
+import com.example.weatherapplication.utility.ApiStateAlert
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 
 
 class AlertViewModel (val repo : WeatherRepoInterface) : ViewModel(){
 
-    private val _mutableAlertWeather = MutableLiveData<List<Alert>>()
-    var alertWeather : LiveData<List<Alert>> = _mutableAlertWeather
+    private val _mutableAlertWeather = MutableStateFlow<ApiStateAlert>(ApiStateAlert.Loading)
+    var alertWeather : StateFlow<ApiStateAlert> = _mutableAlertWeather
 
-    fun getAlert(): LiveData<List<Alert>> {
+    fun getAlert(): StateFlow<ApiStateAlert> {
         viewModelScope.launch(Dispatchers.IO) {
-            alertWeather = repo.getAlerts()
+           repo.getAlerts().catch{
+                e-> _mutableAlertWeather.value = ApiStateAlert.Failure(e)
+            }
+               .collectLatest {
+                   _mutableAlertWeather.value = ApiStateAlert.Success(it)
+               }
         }
-        return alertWeather
+        alertWeather = _mutableAlertWeather
+       return alertWeather
     }
 
     fun deleteAlert(myAlert: Alert) {

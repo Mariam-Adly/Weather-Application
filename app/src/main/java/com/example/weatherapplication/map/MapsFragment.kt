@@ -133,6 +133,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
                 AddNewAlertFragment.lon = latLng!!.longitude
                 requireActivity().finish()
             } else {
+                favoriteWeather = FavoriteWeather(getAddressAndDateForLocation(latLng!!.latitude,latLng!!.longitude),latLng!!.latitude,latLng!!.longitude)
                 favoriteViewModel.insertFavoritePlace(favoriteWeather)
                 requireActivity().finish()
             }
@@ -232,7 +233,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     fun getAddressAndDateForLocation(lat : Double, lon : Double) : String{
         //GPSLat GPSLong
-        Locale.setDefault(Locale(lang))
+       // Locale.setDefault(Locale(lang,"eg"))
          addressGeocoder  = Geocoder(requireContext(), Locale.getDefault())
         try {
             var myAddress : List<Address> = addressGeocoder.getFromLocation(lat, lon, 2)!!
@@ -247,13 +248,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     fun searchLocation() {
         var location =  binding.searchTxt.text.toString().trim()
-
+        // Locale.setDefault(Locale(lang,"eg"))
         var addressList : List<Address>? = null
 
         if(location == null || location == ""){
             Toast.makeText(requireContext(),"provide location",Toast.LENGTH_SHORT).show()
         }else{
-            Locale.setDefault(Locale(lang))
             val geoCoder = Geocoder(requireContext(), Locale.getDefault())
             try {
                 addressList = geoCoder.getFromLocationName(location,1)

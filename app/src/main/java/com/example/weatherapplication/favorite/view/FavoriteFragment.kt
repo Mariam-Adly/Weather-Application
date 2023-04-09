@@ -4,12 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapplication.R
@@ -21,10 +23,13 @@ import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModel
 import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.weatherapplication.map.MapsActivity
 import com.example.weatherapplication.model.FavoriteWeather
+import com.example.weatherapplication.utility.ApiStateList
+import com.example.weatherapplication.utility.Utility
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
-
 
     private lateinit var binding: FragmentFavoriteBinding
     private lateinit var favoriteViewModel: FavoriteViewModel
@@ -52,13 +57,16 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
     override fun onResume() {
         super.onResume()
         initFavRecycler()
-        getFavPlaces()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if(!Utility.isOnline(requireContext())){
+            Toast.makeText(requireContext(),R.string.you_are_offline,Toast.LENGTH_SHORT).show()
+            binding.addFavBtn.visibility = GONE
+        }
         initFavRecycler()
-        getFavPlaces()
+        favoriteViewModel.getFavPlaces()
         binding.addFavBtn.setOnClickListener {
             startActivity(Intent(requireContext(), MapsActivity::class.java))
         }
@@ -67,45 +75,44 @@ class FavoriteFragment : Fragment(),OnClickFavPlaceListener {
 
 
     fun initFavRecycler(){
-        binding.favRecycler
-        favoriteAdapter = FavoriteAdapter(listOf(), context!!,this)
-        binding.favRecycler.setHasFixedSize(true)
-        binding.favRecycler.apply {
-            this.layoutManager = LinearLayoutManager(context,RecyclerView.VERTICAL,false)
-            this.adapter = favoriteAdapter
-        }
-        binding.apply {
-            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT) {
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
-                ): Boolean {
-                    return false
-                }
-
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val favPlace = favoriteAdapter.favLocationList[viewHolder.adapterPosition]
-                    favoriteViewModel.deleteFavoritePlace(favPlace)
-                }
-
-            }).attachToRecyclerView(favRecycler)
-        }
-    }
-     fun getFavPlaces(){
-        favoriteViewModel.getFavPlaces().observe(
-            viewLifecycleOwner){
-                favPlaces ->
-                if(favPlaces.isNotEmpty()){
-                  favoriteAdapter.favLocationList = favPlaces
-                  favoriteAdapter.notifyDataSetChanged()
+        lifecycleScope.launch {
+            favoriteViewModel.favWeather.collectLatest {
+                when(it){
+                    is ApiStateList.Failure -> {Toast.makeText(requireContext(), "Check ${it.msg}", Toast.LENGTH_SHORT)
+                        .show()}
+                    ApiStateList.Loading -> {}
+                    is ApiStateList.Success -> {
+                        binding.favRecycler
+                        favoriteAdapter = FavoriteAdapter(it.data, context!!, this@FavoriteFragment)
+                        binding.favRecycler.setHasFixedSize(true)
+                        binding.favRecycler.apply {
+                            this.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL,false)
+                            this.adapter = favoriteAdapter
+                        }
                 }
             }
+        }
+
+        }
     }
 
     override fun onClickFavPlace(favPlace: FavoriteWeather) {
         val action = FavoriteFragmentDirections.actionFavoriteFragmentToFavWeatherDetailsFragment(favPlace)
-         findNavController().navigate(action)
+         Navigation.findNavController(requireView()).navigate(action)
+    }
+
+    override fun deleteTask(myFav: FavoriteWeather, position: Int) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(R.string.AWTD)
+            .setCancelable(false)
+            .setPositiveButton(R.string.yes) { dialog, id ->
+                favoriteViewModel.deleteFavoritePlace(myFav)
+            }
+            .setNegativeButton(R.string.no) { dialog, id ->
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
     }
 
 }

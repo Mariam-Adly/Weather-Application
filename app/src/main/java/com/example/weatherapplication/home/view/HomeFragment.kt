@@ -23,8 +23,10 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherapplication.R
 import com.example.weatherapplication.databinding.FragmentHomeBinding
 import com.example.weatherapplication.datasource.database.LocalSourceImpl
 import com.example.weatherapplication.datasource.network.RemoteSourceImpl
@@ -34,9 +36,16 @@ import com.example.weatherapplication.home.viewmodel.HomeViewModelFactory
 import com.example.weatherapplication.model.Daily
 import com.example.weatherapplication.model.Hourly
 import com.example.weatherapplication.model.OpenWeather
+import com.example.weatherapplication.utility.ApiState
 import com.example.weatherapplication.utility.TrackingUtility
 import com.example.weatherapplication.utility.Utility
 import com.google.android.gms.location.*
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.*
@@ -67,41 +76,84 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         var view: View = binding.root
+        val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
+        lang = sharedPreferences.getString("myLang","eng")!!
+        addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
         return view
     }
 
 
-
     override fun onResume() {
         super.onResume()
-        getLastLocation()
-//        progressDialog = ProgressDialog(requireContext())
-//        progressDialog.setTitle("loading")
-//        progressDialog.setMessage("data is loading please wait")
-//        progressDialog.show()
-//        CoroutineScope(Dispatchers.IO).launch {
-//            delay(2000)
-//            progressDialog.dismiss()
-//        }
+        if(!Utility.isOnline(requireContext())){
+            Toast.makeText(requireContext(), R.string.you_are_offline,Toast.LENGTH_SHORT).show()
+        }else {
+            getLastLocation()
+            progressDialog = ProgressDialog(requireContext())
+            progressDialog.setTitle("loading")
+            progressDialog.setMessage("data is loading please wait")
+            progressDialog.show()
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(2000)
+                progressDialog.dismiss()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModelFactory =
-            HomeViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()),LocalSourceImpl(requireContext()),requireContext()))
+            HomeViewModelFactory(
+                WeatherRepo.getInstance(
+                    RemoteSourceImpl.getInstance(requireContext()),
+                    LocalSourceImpl(requireContext()),
+                    requireContext()
+                )
+            )
         viewModel =
             ViewModelProvider(requireActivity(), viewModelFactory).get(HomeViewModel::class.java)
-       // Locale.setDefault(Locale(lang))
-        addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
-        viewModel = HomeViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()), LocalSourceImpl(requireContext()),requireContext()))
-        val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
-        lang = sharedPreferences.getString("myLang","")!!
-        val unitShared = requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
-        unit = unitShared.getString("units","metric")!!
-        getLastLocation()
-        requestPermissions()
-        getCurrentWeather()
-        initHoursRecycler()
-        initWeekRecycler()
+        viewModel = HomeViewModel(
+            WeatherRepo.getInstance(
+                RemoteSourceImpl.getInstance(requireContext()),
+                LocalSourceImpl(requireContext()),
+                requireContext()
+            )
+        )
+        val unitShared =
+            requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
+        unit = unitShared.getString("units", "metric")!!
+        if (!Utility.isOnline(requireContext())) {
+            Snackbar.make(activity?.window?.decorView!!.rootView, "Offline", Snackbar.LENGTH_LONG)
+                .setBackgroundTint(resources.getColor(android.R.color.holo_red_light))
+                .show()
+            lifecycleScope.launch(){
+                viewModel.data.collectLatest{ it ->
+                    when(it){
+                        is ApiState.Failure -> {Toast. makeText ( requireContext(),  "Check ${it.msg}",Toast.LENGTH_SHORT) .show ()}
+                        is ApiState.Loading -> {
+                            progressDialog = ProgressDialog(requireContext())
+                            progressDialog.setTitle("loading")
+                            progressDialog.setMessage("data is loading please wait")
+                            progressDialog.show()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(2000)
+                                progressDialog.dismiss()
+                            }
+                        }
+                        is ApiState.Success -> {
+                            viewModel.getCurrentWeatherDB()
+                            updateUIWithWeatherData(it.data)
+                        }
+                    }
+
+                }
+            }
+        } else {
+            getLastLocation()
+            requestPermissions()
+            getCurrentWeather()
+            initHoursRecycler()
+            initWeekRecycler()
+        }
     }
 
     fun getCurrentWeather() {
@@ -122,9 +174,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun getTodayTemp(weather: OpenWeather) {
         binding.todayTempStatusTxt.text = weather.current.weather[0].description
+        binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
         binding.todayTempStatusIcon.setImageResource(Utility.getWeatherIcon(weather.current.weather[0].icon))
         if(lang == "eng" && unit == "metric") {
-            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
             binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}°C"
             binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
             binding.humidityValueTxt.text = "${weather.current.humidity} %"
@@ -133,7 +185,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             binding.UVValueTxt.text = "${weather.current.uvi.toLong()}%"
             binding.visibilityValueTxt.text = "${weather.current.visibility} %"
         }else if(lang == "ar" && unit == "metric"){
-            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
             binding.todayTempDegreeTxt.text = "${Utility.convertNumbersToArabic(weather.current.temp.toInt())}س°"
             binding.pressureValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.pressure)} هـ ب أ"
             binding.humidityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.humidity)} %"
@@ -142,7 +193,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             binding.UVValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.uvi)}%"
             binding.visibilityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.visibility)} %"
         }else if(lang == "eng" && unit == "imperial"){
-            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
             binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}℉"
             binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
             binding.humidityValueTxt.text = "${weather.current.humidity} %"
@@ -152,7 +202,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             binding.visibilityValueTxt.text = "${weather.current.visibility} %"
         }
         else if(lang == "ar" && unit == "imperial"){
-            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
             binding.todayTempDegreeTxt.text = "${Utility.convertNumbersToArabic(weather.current.temp.toInt())}ف°"
             binding.pressureValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.pressure)} هـ ب أ"
             binding.humidityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.humidity)} %"
@@ -162,7 +211,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             binding.visibilityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.visibility)} %"
         }
         else if(lang == "eng" && unit == "standard"){
-            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
             binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}°K"
             binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
             binding.humidityValueTxt.text = "${weather.current.humidity} %"
@@ -172,7 +220,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             binding.visibilityValueTxt.text = "${weather.current.visibility} %"
         }
         else if(lang == "ar" && unit == "standard"){
-            binding.homeDate.text = Utility.timeStampToDate(weather.current.dt,lang)
             binding.todayTempDegreeTxt.text = "${Utility.convertNumbersToArabic(weather.current.temp.toInt())}ك°"
             binding.pressureValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.pressure)} هـ ب أ"
             binding.humidityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.humidity)} %"
@@ -207,18 +254,16 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
             val mLastLocation: Location = locationResult.lastLocation
-           // if (mLastLocation != null) {
-                Locale.setDefault(Locale(lang))
                 latitude = mLastLocation.latitude
                 longitude = mLastLocation.longitude
                 Log.i("mariam", "onLocationResult: $latitude and $longitude")
+                Locale.setDefault(Locale(lang,"eg"))
                 viewModel.getCurrentTemp(latitude, longitude, lang, unit)
-                val address = addressGeocoder.getFromLocation(latitude, longitude, 1)
+                val address = addressGeocoder.getFromLocation(latitude, longitude, 2)
                 if (address != null) {
                     binding.locationName.text =
                         "${address[0].subAdminArea}, ${address[0].adminArea}"
                 }
-            //}
         }
 
     }

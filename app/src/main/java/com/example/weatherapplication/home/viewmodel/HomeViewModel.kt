@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapplication.model.OpenWeather
 import com.example.weatherapplication.datasource.repo.WeatherRepoInterface
+import com.example.weatherapplication.utility.ApiState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -36,6 +38,28 @@ class HomeViewModel(val repo : WeatherRepoInterface) : ViewModel(){
 
         }
 
+    }
+
+    private var _data: MutableStateFlow<ApiState>
+    var data: StateFlow<ApiState>
+
+
+    init {
+        _data = MutableStateFlow(ApiState.Loading)
+        data= _data
+    }
+
+    fun getCurrentWeatherDB() : StateFlow<ApiState> {
+        viewModelScope.launch(Dispatchers.IO){
+            repo.selectAllStoredWeatherModel().catch { e ->
+                _data.value = ApiState.Failure(e)
+            }
+                .collectLatest {
+                    _data.value = ApiState.Success(it)
+                }
+        }
+        data = _data
+        return data
     }
 
 }

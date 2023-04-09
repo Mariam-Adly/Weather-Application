@@ -5,21 +5,19 @@ import androidx.room.*
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeatherDao {
 
     @Query("SELECT * FROM weather")
-    fun selectWeatherModel(): OpenWeather
+    fun selectWeatherModel(): Flow<OpenWeather>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertWeatherModel(openWeather: OpenWeather)
 
-//    @get:Query("SELECT * FROM Alert")
-//    val allAlarmsList : Single<List<Alert>>
     @Query("SELECT * FROM favoriteWeather")
-    fun getAllFavoriteWeather() : LiveData<List<FavoriteWeather>>
+    fun getAllFavoriteWeather() : Flow<List<FavoriteWeather>>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFavoritePlace(favoriteWeather: FavoriteWeather)
 
@@ -30,7 +28,7 @@ interface WeatherDao {
     fun updateFavoritePlace(favoriteWeather: FavoriteWeather)
 
     @Query("SELECT * FROM Alert")
-    fun getAlerts(): LiveData<List<Alert>>
+    fun getAlerts(): Flow<List<Alert>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
      fun insertAlert(myAlert: Alert)

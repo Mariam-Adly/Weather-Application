@@ -1,5 +1,6 @@
 package com.example.weatherapplication.favorite.view
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,8 +11,10 @@ import com.example.weatherapplication.databinding.ItemFavoriteBinding
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.utility.Utility
 
-class FavoriteAdapter( var favLocationList : List<FavoriteWeather>,
-var context: Context, var listener : OnClickFavPlaceListener) : RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
+class FavoriteAdapter(
+    var favLocationList: List<FavoriteWeather>,
+    var context: Context, private val favInterface: OnClickFavPlaceListener
+) : RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
 
 
 
@@ -28,6 +31,8 @@ var context: Context, var listener : OnClickFavPlaceListener) : RecyclerView.Ada
         val viewHolder = ViewHolder(binding)
         return viewHolder
     }
+    val sharedPreferences = context.getSharedPreferences("language", Activity.MODE_PRIVATE)
+    val lang = sharedPreferences.getString("myLang","eng")!!
 
     override fun getItemCount(): Int {
         return favLocationList.size
@@ -36,14 +41,22 @@ var context: Context, var listener : OnClickFavPlaceListener) : RecyclerView.Ada
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 
-            holder.binding.txtFavTimeZone.text = favLocationList[position].favLocationName
-            holder.binding.favItem.setOnClickListener { favPlace ->
+         if(lang == "eng") {
+             holder.binding.txtFavTimeZone.text = favLocationList[position].favLocationName
+
+         }else{
+             holder.binding.txtFavTimeZone.text = favLocationList[position].favLocationName
+         }
+        holder.binding.favItem.setOnClickListener { favPlace ->
                 if(Utility.isOnline(context)){
-                    listener.onClickFavPlace(favLocationList[position])
+                    favInterface.onClickFavPlace(favLocationList[position])
                 }else{
                     Toast.makeText(context, context?.getString(R.string.no_internet_msg), Toast.LENGTH_SHORT).show()
                 }
             }
+         holder.binding.imgDelete.setOnClickListener {
+             favInterface.deleteTask(favLocationList[position],position)
+         }
 
     }
 

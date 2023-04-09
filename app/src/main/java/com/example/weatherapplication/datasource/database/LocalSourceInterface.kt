@@ -8,19 +8,21 @@ import androidx.room.OnConflictStrategy
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
+import kotlinx.coroutines.flow.Flow
+
 interface LocalSourceInterface {
 
-    suspend fun getAllFavoriteWeather() : LiveData<List<FavoriteWeather>>
+    suspend fun getAllFavoriteWeather() : Flow<List<FavoriteWeather>>
 
-    suspend fun selectAllStoredWeatherModel(): OpenWeather
+    suspend fun selectAllStoredWeatherModel(): Flow<OpenWeather>
    suspend fun insertWeatherModel(openWeather: OpenWeather)
    suspend fun deleteFavoritePlace(favoriteWeather: FavoriteWeather)
    suspend fun insertFavoritePlace(favoriteWeather: FavoriteWeather)
    suspend fun updateFavoritePlace(favoriteWeather: FavoriteWeather)
-   suspend fun getAlerts(): LiveData<List<Alert>>
+   suspend fun getAlerts(): Flow<List<Alert>>
 
     suspend fun insertAlert(myAlert: Alert)
 
     suspend fun deleteAlerts(myAlert: Alert)
-   // val allAlarmsList : Single<List<Alert>>?
+
 }

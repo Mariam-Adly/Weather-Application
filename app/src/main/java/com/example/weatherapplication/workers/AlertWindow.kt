@@ -10,25 +10,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.example.weatherapplication.R
-import com.example.weatherapplication.databinding.AlertDialogBinding
+import com.example.weatherapplication.databinding.AlertWindowBinding
 
-class AlertWindow(private val context: Context, private val description: String, private val title: String) {
-    lateinit var binding: AlertDialogBinding
+class AlertWindow(private val context: Context, private val description: String,private val title:String) {
+    private lateinit var binding: AlertWindowBinding
+    private lateinit var windowManager: WindowManager
     private lateinit var customDialog: View
-    private var mediaPlayer: MediaPlayer =  MediaPlayer.create(context, R.raw.weatheralert)
+    private var mediaPlayer: MediaPlayer =  MediaPlayer.create(context, R.raw.summer)
 
 
     fun onCreate() {
-        mediaPlayer.start()// no need to call prepare(); create() does that for you
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        customDialog = inflater.inflate(R.layout.alert_dialog, null)
-        binding = AlertDialogBinding.bind(customDialog)
+        customDialog = inflater.inflate(R.layout.alert_window, null)
+        binding = AlertWindowBinding.bind(customDialog)
         initView()
         val LAYOUT_FLAG: Int = Flag()
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val layoutParams: WindowManager.LayoutParams = Params(LAYOUT_FLAG)
         windowManager.addView(customDialog, layoutParams)
-
+        mediaPlayer.start()
     }
 
     private fun Flag(): Int {
@@ -54,10 +54,9 @@ class AlertWindow(private val context: Context, private val description: String,
     }
 
     private fun initView() {
-        // binding.img.setImageResource(R.drawable.ic_broken_cloud)
-        binding.dialogMsg.text = description
-        binding.dialogSubTitle.text=title
-        binding.dismissAlertBtn.setOnClickListener {
+        binding.title.text = title
+        binding.des.text = description
+        binding.btn.setOnClickListener {
             close()
         }
     }

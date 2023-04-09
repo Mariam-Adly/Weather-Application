@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
+import kotlinx.coroutines.flow.Flow
 
 class LocalSourceImpl(private val context: Context):LocalSourceInterface {
 
@@ -28,11 +29,11 @@ class LocalSourceImpl(private val context: Context):LocalSourceInterface {
             }
         }
     }
-    override suspend fun getAllFavoriteWeather() : LiveData<List<FavoriteWeather>> {
+    override suspend fun getAllFavoriteWeather() : Flow<List<FavoriteWeather>> {
         return weatherDao.getAllFavoriteWeather()
     }
 
-    override suspend fun selectAllStoredWeatherModel(): OpenWeather {
+    override suspend fun selectAllStoredWeatherModel(): Flow<OpenWeather> {
         return weatherDao.selectWeatherModel()
     }
 
@@ -55,7 +56,7 @@ class LocalSourceImpl(private val context: Context):LocalSourceInterface {
        weatherDao.updateFavoritePlace(favoriteWeather)
     }
 
-    override suspend fun getAlerts(): LiveData<List<Alert>> {
+    override suspend fun getAlerts(): Flow<List<Alert>> {
        return weatherDao.getAlerts()
     }
 

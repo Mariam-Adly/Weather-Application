@@ -4,15 +4,13 @@ package com.example.weatherapplication.datasource.repo
 import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.work.*
 import com.example.weatherapplication.datasource.database.LocalSourceInterface
 import com.example.weatherapplication.datasource.network.RemoteSource
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
 import retrofit2.Response
-import java.util.concurrent.TimeUnit
-
+import kotlinx.coroutines.flow.*
 
 class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInterface,var context: Context) : WeatherRepoInterface {
 
@@ -38,7 +36,7 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
       return remoteSource.getCurrentTempData(lat,long,lang,tempUnit)
    }
 
-    override suspend fun selectAllStoredWeatherModel(): OpenWeather {
+    override suspend fun selectAllStoredWeatherModel(): Flow<OpenWeather> {
         return localSource.selectAllStoredWeatherModel()
     }
 
@@ -46,7 +44,7 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
         localSource.insertWeatherModel(openWeather)
     }
 
-    override suspend fun getAllFavoriteWeather(): LiveData<List<FavoriteWeather>> {
+    override suspend fun getAllFavoriteWeather(): Flow<List<FavoriteWeather>> {
         return localSource.getAllFavoriteWeather()
     }
 
@@ -66,7 +64,7 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
         return remoteSource.getFavWeatherData(favWeather)
     }
 
-    override suspend fun getAlerts(): LiveData<List<Alert>> {
+    override suspend fun getAlerts(): Flow<List<Alert>> {
         return localSource.getAlerts()
     }
 
