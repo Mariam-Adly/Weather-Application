@@ -14,38 +14,8 @@ class Utility {
 
     companion object{
 
-        val latLongSharedPrefKey : String = "LatLong"
-        val GPSLatKey : String = "GPSLat"
-        val GPSLongKey : String = "GPSLong"
-        val Language_EN_Value : String = "en"
-        val Language_AR_Value : String = "ar"
-        val Language_Key : String = "Lang"
-        val Language_Value_Key = "Language"
         val TEMP_KEY = "Temp"
-        val IMPERIAL = "imperial"
-        val STANDARD = "standard"
         val METRIC = "metric"
-        val ERROR_DIALOG_REQUEST = 5555
-
-        val ALERT_TYPE_ARRAY = arrayOf(
-            "Rain",
-            "Snow",
-            "Cloud",
-            "Wind",
-            "Thunder Storm",
-            "Mist / Fog",
-            "Fire warning"
-        )
-
-        val ALERT_TYPE_ARRAY_ARABIC = arrayOf(
-            "مطر",
-            "ثلوج",
-            "سحب",
-            "رياح",
-            "عاصفة ترابية",
-            "ضباب",
-            "حرارة"
-        )
 
         fun timeStampToDate (dt: Long,lang: String) : String{
             var date : Date = Date(dt * 1000)

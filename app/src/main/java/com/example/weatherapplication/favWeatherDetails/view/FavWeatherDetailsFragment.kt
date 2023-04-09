@@ -66,7 +66,7 @@ class FavWeatherDetailsFragment : Fragment() {
         detailsViewModel =
             ViewModelProvider(requireActivity(), detailsFactory).get(FavWeatherDetailsViewModel::class.java)
         detailsViewModel = FavWeatherDetailsViewModel(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()), LocalSourceImpl(requireContext()),requireContext()))
-        val sharedPreferences = context?.getSharedPreferences("language", Activity.MODE_PRIVATE)
+        val sharedPreferences = context?.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
          lang = sharedPreferences?.getString("myLang"," ")!!
         getCurrentWeather()
         initHoursRecycler()

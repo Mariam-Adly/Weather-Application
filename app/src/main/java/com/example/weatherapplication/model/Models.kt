@@ -22,19 +22,6 @@ data class OpenWeather(
     @SerializedName("alerts") var alerts: List<Alerts>?
 )
 
-//@Entity(primaryKeys = ["isFav","timezone"])
-//data class Welcome (
-//    var isFav:Int=0,
-//    val lat: Double=0.0,
-//    val lon: Double=0.0,
-//    var timezone: String="",
-//    var timezonear: String="",
-//    val timezone_offset: Long=0,
-//    val current: Current?,
-//    val hourly: List<Current>?,
-//    val daily: List<Daily>?,
-//    val alerts: List<Alerts>?
-//): Serializable
 
 data class Weather(
     @SerializedName("id") var id: Int,

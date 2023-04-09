@@ -64,6 +64,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     var longitude: Double = 0.0
     lateinit var lang: String
     lateinit var unit: String
+    private lateinit var wind:String
     lateinit var addressGeocoder: Geocoder
     lateinit var progressDialog: ProgressDialog
 
@@ -76,7 +77,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         var view: View = binding.root
-        val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
         lang = sharedPreferences.getString("myLang","eng")!!
         addressGeocoder = Geocoder(requireContext(), Locale.getDefault())
         return view
@@ -121,6 +122,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val unitShared =
             requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
         unit = unitShared.getString("units", "metric")!!
+        val windShared = requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
+        wind = windShared.getString("wind","meter")!!
         if (Utility.isOnline(requireContext())) {
             getCurrentWeather()
             requestPermissions()
@@ -216,7 +219,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             binding.cloudValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.clouds)}   م"
             binding.UVValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.uvi)}%"
             binding.visibilityValueTxt.text = "${Utility.convertNumbersToArabic(weather.current.visibility)} %"
-        }else if(lang == "eng" && unit == "imperial"){
+        }else if(lang == "eng" && unit == "imperial" && wind == "milis"){
             binding.todayTempDegreeTxt.text = "${weather.current.temp.toInt()}℉"
             binding.pressureValueTxt.text = "${weather.current.pressure} hPa"
             binding.humidityValueTxt.text = "${weather.current.humidity} %"
@@ -280,9 +283,12 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             val mLastLocation: Location = locationResult.lastLocation
                 latitude = mLastLocation.latitude
                 longitude = mLastLocation.longitude
+                 Locale.setDefault(Locale(lang,"eg"))
                 Log.i("mariam", "onLocationResult: $latitude and $longitude")
-                Locale.setDefault(Locale(lang,"eg"))
                 viewModel.getCurrentTemp(latitude, longitude, lang, unit)
+                if(lang == "ar") {
+                   Locale.setDefault(Locale(lang))
+                 }
                 val address = addressGeocoder.getFromLocation(latitude, longitude, 2)
                 if (address != null) {
                     binding.locationName.text =

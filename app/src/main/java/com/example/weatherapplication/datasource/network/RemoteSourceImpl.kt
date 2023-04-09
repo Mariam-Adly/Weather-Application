@@ -13,7 +13,7 @@ class RemoteSourceImpl(var context: Context) : RemoteSource {
     }
 
 
-    val sharedPreferences = context.getSharedPreferences("language", Activity.MODE_PRIVATE)
+    val sharedPreferences = context.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
      var lang = sharedPreferences.getString("myLang","")!!
 
     companion object {
