@@ -21,11 +21,11 @@
             android:layout_height="45dp"
             app:autoSizeTextType="uniform"
             app:autoSizeMaxTextSize="24dp"
-            android:background="@color/custom_grey"
+            android:background="@color/black"
             android:gravity="center"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
