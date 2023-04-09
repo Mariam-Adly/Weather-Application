@@ -98,8 +98,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
-        lang = sharedPreferences.getString("myLang","")!!
+        val sharedPreferences = requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
+        lang = sharedPreferences.getString("myLang"," ")!!
         val bundle= activity?.intent?.extras
         if (bundle != null) {
             key=bundle.getInt("key")
@@ -233,7 +233,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback,LocationListener
 
     fun getAddressAndDateForLocation(lat : Double, lon : Double) : String{
         //GPSLat GPSLong
-       // Locale.setDefault(Locale(lang,"eg"))
+         if(lang == "ar") {
+             Locale.setDefault(Locale(lang))
+         }
          addressGeocoder  = Geocoder(requireContext(), Locale.getDefault())
         try {
             var myAddress : List<Address> = addressGeocoder.getFromLocation(lat, lon, 2)!!

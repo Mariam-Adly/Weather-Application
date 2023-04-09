@@ -25,7 +25,6 @@
     <string name="celsius">Celsius</string>
     <string name="Kelvin">Kelvin</string>
     <string name="fahrenheit">Fahrenheit</string>
-    <string name="search">Search</string>
     <string name="add_fav_mgs">Do you want to save this location to favorites?</string>
     <string name="save_btn">Save</string>
     <string name="no_internet_msg">No Internet</string>
@@ -52,7 +51,6 @@
     <string name="milis">Miles/Hour</string>
     <string name="meter">Meter/Sec</string>
     <string name="weather_alert">Weather Alert</string>
-    <string name="dismiss_btn_txt">Dismiss</string>
     <string name="no_alarm">There is No Alarm</string>
     <string name="home">Home</string>
     <string name="favorite">Favorite</string>
@@ -68,6 +66,8 @@
     <string name="the_weather_is">The Weather is</string>
     <string name="ther_is_no_alarm">There is No Alarm</string>
     <string name="channel_name">Channel Nmae</string>
+    <string name="search">Search</string>
+    <string name="dismiss_btn_txt">Dismiss</string>
     <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

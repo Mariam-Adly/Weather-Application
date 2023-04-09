@@ -26,7 +26,6 @@
     <string name="celsius">سيلزيس</string>
     <string name="Kelvin">كلفن</string>
     <string name="fahrenheit">فهرانهايت</string>
-    <string name="search">بحث</string>
     <string name="add_fav_mgs">تريد اضافته الي المفضلة؟</string>
     <string name="save_btn">حفظ</string>
     <string name="no_internet_msg">لا يوجد انترنت</string>
@@ -51,12 +50,23 @@
     <string name="alarm_txt">المنبه</string>
     <string name="windSpeed">سرعة الرياح</string>
     <string name="milis">ميل/ساعة</string>
+    <string name="dismiss_btn_txt">ايقاف</string>
     <string name="meter">متر/ثانية</string>
     <string name="weather_alert">الطقس</string>
-    <string name="dismiss_btn_txt">ايقاف</string>
     <string name="no_alarm">لا يوجد اي تنبيه</string>
     <string name="home">الرئيسية</string>
     <string name="favorite">المفضلة</string>
     <string name="alert">المنبهات</string>
     <string name="setting">الاعدادات</string>
+    <string name="features">خدمات</string>
+    <string name="ok">تم</string>
+    <string name="no">لا</string>
+    <string name="AWTD">هل تريد مسحه بالفعل ؟</string>
+    <string name="yes">نعم</string>
+    <string name="deleted">تم المسح</string>
+    <string name="you_are_offline">لا يوجد انترنت. بعض الخدمات غير متاحة </string>
+    <string name="the_weather_is">الطقس يكون</string>
+    <string name="ther_is_no_alarm">لا يوجد تنبيهات</string>
+    <string name="channel_name">Channel Nmae</string>
+    <string name="search">بحث</string>
 </resources>

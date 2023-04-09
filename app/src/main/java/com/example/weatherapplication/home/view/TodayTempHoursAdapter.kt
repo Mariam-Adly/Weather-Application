@@ -22,7 +22,7 @@ class TodayTempHoursAdapter(
 
     val unitShared = context?.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
     var unit = unitShared?.getString("units","metric")!!
- val sharedPreferences = context?.getSharedPreferences("language", Activity.MODE_PRIVATE)
+ val sharedPreferences = context?.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
    var lang = sharedPreferences?.getString("myLang","")!!
 
     inner class ViewHolder(val binding: TodayTempBinding) : RecyclerView.ViewHolder(binding.root){

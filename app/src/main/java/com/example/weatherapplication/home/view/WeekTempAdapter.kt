@@ -20,7 +20,7 @@ class WeekTempAdapter(
 //    var langu = languageShared?.getString(Utility.Language_Key, "en")!!
      val unitShared = context?.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
     var unit = unitShared?.getString("units","metric")!!
-val sharedPreferences = context?.getSharedPreferences("language", Activity.MODE_PRIVATE)
+val sharedPreferences = context?.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
     val language = sharedPreferences?.getString("myLang","eng")
     class ViewHolder(val binding: AllWeekTempBinding) : RecyclerView.ViewHolder(binding.root){
         init {

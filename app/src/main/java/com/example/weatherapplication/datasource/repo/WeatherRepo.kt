@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.*
 
 class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInterface,var context: Context) : WeatherRepoInterface {
 
-    val sharedPreferences = context.getSharedPreferences("language", Activity.MODE_PRIVATE)
+    val sharedPreferences = context.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
    var lang = sharedPreferences.getString("myLang","")!!
     companion object {
         private var instance : WeatherRepo? = null

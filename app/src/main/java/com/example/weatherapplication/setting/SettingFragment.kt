@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.os.Binder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,12 +22,10 @@ import java.util.Locale
 
 class SettingFragment : Fragment() {
 
-     lateinit var binding : FragmentSettingBinding
-     lateinit var sharedPreference:SharedPreferences
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private lateinit var binding : FragmentSettingBinding
+    private lateinit var sharedPreference:SharedPreferences
 
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,17 +34,21 @@ class SettingFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentSettingBinding.inflate(inflater, container, false)
         var view : View = binding.root
+         sharedPreference =
+            requireActivity().getSharedPreferences("getSharedPreferences", Context.MODE_PRIVATE)
+        initUI()
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       sharedPreference =
+         sharedPreference =
             requireActivity().getSharedPreferences("getSharedPreferences", Context.MODE_PRIVATE)
+         initUI()
         changeLocation()
         changeLanguage()
         changeTemp()
-        loadLocale()
+        //loadLocale()
         changeSound()
         changeSoundSpeed()
 
@@ -75,10 +78,10 @@ class SettingFragment : Fragment() {
         binding.groupSpeed.setOnCheckedChangeListener { radioGroup, checkedButtonId ->
             when{
                 checkedButtonId == binding.radioButtonMeter.id -> {
-                    startActivity(Intent( requireActivity(), MainActivity::class.java))
+                    sharedPreference.edit().putString("wind","meter").commit()
                 }
                 checkedButtonId == binding.radioButtonMilis.id -> {
-                    startActivity(Intent( requireActivity(), MapsActivity::class.java))
+                    sharedPreference.edit().putString("wind","milis").commit()
                 }
             }
         }
@@ -87,9 +90,11 @@ class SettingFragment : Fragment() {
         binding.groupLocation.setOnCheckedChangeListener{ radioGroup, checkedButtonId ->
             when{
                  checkedButtonId == binding.radioButtonGPS.id -> {
+                     sharedPreference.edit().putString("location","gps")
                     startActivity(Intent( requireActivity(), MainActivity::class.java))
                 }
                 checkedButtonId == binding.radioButtonMaps.id -> {
+                    sharedPreference.edit().putString("location","map")
                     startActivity(Intent( requireActivity(), MapsActivity::class.java))
                 }
             }
@@ -101,14 +106,14 @@ class SettingFragment : Fragment() {
         binding.groupLan.setOnCheckedChangeListener { radioGroup, checkedButtonId ->
             when{
                 checkedButtonId == binding.radioButtonEnglish.id -> {
+                    sharedPreference.edit().putString("myLang","eng")
+                        .commit()
                      setLocale("eng")
-                     refreshFragment()
-                    startActivity(Intent( requireActivity(), MainActivity::class.java))
                 }
                 checkedButtonId == binding.radioButtonArabic.id -> {
+                    sharedPreference.edit().putString("myLang","ar")
+                        .commit()
                      setLocale("ar")
-                     refreshFragment()
-                    startActivity(Intent( requireActivity(), MainActivity::class.java))
                 }
             }
         }
@@ -116,20 +121,17 @@ class SettingFragment : Fragment() {
 
      private  fun setLocale(language: String){
          val metric = resources.displayMetrics
-         var locale = Locale(language)
-         Locale.setDefault(locale)
-         var congig = Configuration()
-         congig.locale = locale
-         resources.updateConfiguration(congig,metric)
-         val editor = requireActivity().getSharedPreferences("language",Context.MODE_PRIVATE).edit()
-         editor.putString("myLang",language)
-         editor.apply()
+         val configuration = resources.configuration
+         configuration.locale = Locale(language)
+         Locale.setDefault(Locale(language))
+         configuration.setLayoutDirection(Locale(language))
+         // update configuration
+         resources.updateConfiguration(configuration, metric)
+         // notify configuration
+         onConfigurationChanged(configuration)
+         requireActivity().recreate()
      }
-     private fun loadLocale(){
-         val sharedPreferences = requireActivity().getSharedPreferences("language",Activity.MODE_PRIVATE)
-         val language = sharedPreferences.getString("myLang","")
-         setLocale(language!!)
-     }
+
 
     enum class Enum_units(){standard,metric,imperial}
     private fun changeTemp(){
@@ -156,11 +158,53 @@ class SettingFragment : Fragment() {
     }
 
     private fun refreshFragment(){
-        val ft: FragmentTransaction = this.fragmentManager!!.beginTransaction()
-        ft.detach(this)
-        ft.attach(this)
-        ft.commit()
-       // fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit()
+        fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit()
+    }
+
+    fun initUI() {
+        val sharedPreference =
+            requireActivity().getSharedPreferences("getSharedPreferences", Context.MODE_PRIVATE)
+        var lang = sharedPreference.getString("myLang", "")
+        var alert = sharedPreference.getString("alert", Enum_sound.notification.toString())
+        var location = sharedPreference.getString("location","")
+        var wind = sharedPreference.getString("wind","")
+        var units = sharedPreference.getString("units", Enum_units.metric.toString())
+        if (lang == "eng") {
+            binding.groupLan.check(binding.radioButtonEnglish.id)
+        }
+        if (lang == "ar") {
+            binding.groupLan.check(binding.radioButtonArabic.id)
+        }
+        if(location == "gps"){
+            binding.groupLocation.check(binding.radioButtonGPS.id)
+        }
+        if(location == "map"){
+            binding.groupLocation.check(binding.radioButtonMaps.id)
+        }
+        if(wind == "meter"){
+            binding.groupSpeed.check(binding.radioButtonMeter.id)
+        }
+        if(wind == "milis"){
+            binding.groupSpeed.check(binding.radioButtonMilis.id)
+        }
+        if (alert == Enum_sound.notification.toString()) {
+            binding.groupAlert.check(binding.radioButtonNotification.id)
+        }
+        if (alert == Enum_sound.alarm.toString()) {
+            binding.groupAlert.check(binding.radioButtonAlarm.id)
+        }
+
+        if (units == Enum_units.metric.toString()) {
+            binding.groupTemp.check(binding.radioButtonTempMetricCelsius.id)
+        }
+        if (units == Enum_units.standard.toString()) {
+            binding.groupTemp.check(binding.radioButtonTempMetricKelvin.id)
+        }
+        if (units == Enum_units.imperial.toString()) {
+            binding.groupTemp.check(binding.radioButtonTempMetricFahrenheit.id)
+        }
+
+
     }
 
 }

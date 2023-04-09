@@ -15,7 +15,7 @@ import com.example.weatherapplication.utility.Utility
 class AlertAdapter (var alertList : List<Alert>,
 var context: Context , private val deleteAlertAction: (myAlert: Alert) -> Unit) : RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
 
-    val sharedPreferences = context.getSharedPreferences("language", Activity.MODE_PRIVATE)
+    val sharedPreferences = context.getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
     val language = sharedPreferences.getString("myLang","eng")
     class ViewHolder (val binding: AlertItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
