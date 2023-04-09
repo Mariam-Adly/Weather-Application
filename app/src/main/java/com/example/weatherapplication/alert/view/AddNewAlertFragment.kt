@@ -101,10 +101,10 @@ class AddNewAlertFragment : DialogFragment() {
         }
 
         binding.alertSubmitBtn.setOnClickListener {
-            myAlert = Alert(timeFormat,startDate, endDate, lat, lon, address)
-                alertViewModel.setAlarm(myAlert)
-                setWorker(myAlert)
-                dismiss()
+            myAlert = Alert(timeFormat, startDate, endDate, lat, lon, address)
+            alertViewModel.setAlarm(myAlert)
+            OneTimeWork.setWorker(myAlert, requireContext())
+            dismiss()
         }
         val sharedPreferences = requireActivity().getSharedPreferences("language", Activity.MODE_PRIVATE)
         language = sharedPreferences.getString("myLang","")!!
@@ -186,43 +186,6 @@ class AddNewAlertFragment : DialogFragment() {
         timePicker.show()
     }
 
-
-//    private fun setWorker() {
-//        val constraints = Constraints.Builder()
-//            .setRequiresBatteryNotLow(true)
-//            .build()
-//
-//        val periodicWorkRequest = PeriodicWorkRequest.Builder(
-//            MyPeriodicWorkJop::class.java, 24, TimeUnit.HOURS)
-//            .setConstraints(constraints)
-//            .build()
-//
-//        WorkManager.getInstance().enqueueUniquePeriodicWork(
-//            "MyWorkManager", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest)
-//    }
-
-    fun setWorker(myAlert: Alert){
-        val calendar = Calendar.getInstance()
-        val currentTime = calendar.timeInMillis.div(1000)
-        val pickTime = myAlert.Time
-        val delay = ((currentTime - pickTime)/60/60/60/60)-115
-        Log.i("mariam", "setWorker: $delay")
-        val data = Data.Builder()
-        data.putDouble("lat", myAlert.lat)
-        data.putDouble("lon", myAlert.lon)
-        data.putString("address", myAlert.AlertCityName)
-        data.putLong("startDate", myAlert.startDay)
-        data.putLong("endDate", myAlert.endDay)
-        var stringAlert = Gson().toJson(myAlert)
-        data.putString("alert", stringAlert)
-        val workRequest = PeriodicWorkRequestBuilder<OneTimeWork>(1,TimeUnit.DAYS)
-            .setInitialDelay(delay, TimeUnit.SECONDS)
-            .addTag(myAlert.startDay.toString() +myAlert.endDay.toString())
-            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
-            .setInputData(data.build())
-            .build()
-        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(myAlert.startDay.toString()+myAlert.endDay.toString(),ExistingPeriodicWorkPolicy.REPLACE,workRequest)
-    }
 
 
 }

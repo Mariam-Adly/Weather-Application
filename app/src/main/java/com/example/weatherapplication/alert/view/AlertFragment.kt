@@ -7,12 +7,16 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkManager
 import com.example.weatherapplication.MainActivity
 import com.example.weatherapplication.R
 import com.example.weatherapplication.alert.viewmodel.AlertViewModel
@@ -24,7 +28,12 @@ import com.example.weatherapplication.datasource.network.RemoteSourceImpl
 import com.example.weatherapplication.datasource.repo.WeatherRepo
 import com.example.weatherapplication.favorite.view.FavoriteAdapter
 import com.example.weatherapplication.favorite.view.FavoriteFragmentDirections
+import com.example.weatherapplication.utility.ApiStateAlert
+import com.example.weatherapplication.utility.Utility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class AlertFragment : Fragment() {
     lateinit var binding : FragmentAlertBinding
@@ -33,7 +42,7 @@ class AlertFragment : Fragment() {
     lateinit var alertAdapter: AlertAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+       checkOverlayPermission()
     }
 
     override fun onResume() {
@@ -52,14 +61,16 @@ class AlertFragment : Fragment() {
         alertFactory = AlertViewModelFactory(WeatherRepo.getInstance(RemoteSourceImpl.getInstance(requireContext()), LocalSourceImpl(requireContext()),requireContext()))
         alertViewModel = ViewModelProvider(this,alertFactory).get(AlertViewModel::class.java)
         return view
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if(!Utility.isOnline(requireContext())){
+            Toast.makeText(requireContext(),R.string.you_are_offline,Toast.LENGTH_SHORT).show()
+            binding.addAlert.visibility = View.GONE
+        }
         binding.addAlert.setOnClickListener {
-            //checkOverlayPermission()
+            checkOverlayPermission()
             AddNewAlertFragment().show(requireActivity().supportFragmentManager,"MyAlertDialog")
         }
         initAlertRecycler()
@@ -69,14 +80,14 @@ class AlertFragment : Fragment() {
     private fun checkOverlayPermission() {
         if (!Settings.canDrawOverlays(requireContext())) {
             val alertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
-            alertDialogBuilder.setTitle("Weather Alerts")
-                .setMessage("features")
-                .setPositiveButton("ok") { dialog: DialogInterface, i: Int ->
+            alertDialogBuilder.setTitle(getString(R.string.weather_alert))
+                .setMessage(getString(R.string.features))
+                .setPositiveButton(getText(R.string.ok)) { dialog: DialogInterface, i: Int ->
                     var myIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
                     startActivity(myIntent)
                     dialog.dismiss()
                 }.setNegativeButton(
-                    "Cancel"
+                    getString(R.string.cancel)
                 ) { dialog: DialogInterface, i: Int ->
                     dialog.dismiss()
                     startActivity(Intent(requireContext(), MainActivity::class.java))
@@ -85,41 +96,58 @@ class AlertFragment : Fragment() {
     }
 
     fun initAlertRecycler(){
-        binding.recAlertsWeathers
-       alertAdapter = AlertAdapter(listOf(), context!!)
-        binding.recAlertsWeathers.setHasFixedSize(true)
-        binding.recAlertsWeathers.apply {
-            this.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL,false)
-            this.adapter = alertAdapter
-        }
-        binding.apply {
-            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
-                ): Boolean {
-                    return false
-                }
+        lifecycleScope.launch {
+            alertViewModel.alertWeather.collectLatest {
+                when(it){
+                    is ApiStateAlert.Failure -> { Toast.makeText(requireContext(), "Check ${it.msg}", Toast.LENGTH_SHORT)
+                        .show()}
+                    ApiStateAlert.Loading -> {}
+                    is ApiStateAlert.Success -> {
+                        binding.recAlertsWeathers
+                       alertAdapter= AlertAdapter(it.data, context!!){
+                            val builder = AlertDialog.Builder(requireContext())
+                            builder.setMessage(R.string.AWTD)
+                                .setCancelable(false)
+                                .setPositiveButton(R.string.yes) { dialog, id ->
+                                    alertViewModel.deleteAlert(it)
 
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val alert = alertAdapter.alertList[viewHolder.adapterPosition]
-                    alertViewModel.deleteAlert(alert)
-                }
 
-            }).attachToRecyclerView(recAlertsWeathers)
+                                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag(it.startDay.toString()+it.endDay.toString())
+                                    Toast.makeText(requireContext(), getString(R.string.deleted), Toast.LENGTH_SHORT).show()
+                                }
+                                .setNegativeButton(R.string.no) { dialog, id ->
+                                    dialog.dismiss()
+                                }
+                            val alert = builder.create()
+                            alert.show()
+                        }
+                        binding.recAlertsWeathers.setHasFixedSize(true)
+                        binding.recAlertsWeathers.apply {
+                            this.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL,false)
+                            this.adapter = alertAdapter
+                        }
+                    }
+                }
+            }
         }
+
     }
+
     fun getAlert(){
-        alertViewModel.getAlert().observe(
-            viewLifecycleOwner){
-                alert ->
-            if(alert.isNotEmpty()){
-                alertAdapter.alertList = alert
-                alertAdapter.notifyDataSetChanged()
+        lifecycleScope.launch {
+            alertViewModel.getAlert().collectLatest {
+                it -> when(it){
+                is ApiStateAlert.Failure -> {Toast.makeText(requireContext(), "Check ${it.msg}", Toast.LENGTH_SHORT)
+                    .show()}
+                is ApiStateAlert.Loading -> {}
+                is ApiStateAlert.Success -> {
+                   // alertViewModel.getAlert()
+                    alertAdapter.alertList = it.data
+                    alertAdapter.notifyDataSetChanged()
+                }
+            }
             }
         }
     }
-
 
 }

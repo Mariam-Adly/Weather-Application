@@ -13,7 +13,7 @@ import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.utility.Utility
 
 class AlertAdapter (var alertList : List<Alert>,
-var context: Context) : RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
+var context: Context , private val deleteAlertAction: (myAlert: Alert) -> Unit) : RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
 
     val sharedPreferences = context.getSharedPreferences("language", Activity.MODE_PRIVATE)
     val language = sharedPreferences.getString("myLang","eng")
@@ -52,6 +52,8 @@ var context: Context) : RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
             holder.binding.txtTime.text = Utility.timeStampToHour(item.Time, language)
             holder.binding.txtTo.text = Utility.timeStampToDate(item.endDay,language)
         }
-
+        holder.binding.imgDelete.setOnClickListener {
+            deleteAlertAction(item)
+        }
     }
 }

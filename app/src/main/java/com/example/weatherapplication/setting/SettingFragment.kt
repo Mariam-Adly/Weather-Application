@@ -1,7 +1,6 @@
-package com.example.weatherapplication.setting.view
+package com.example.weatherapplication.setting
 
 import android.app.Activity
-import android.app.LocaleManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,15 +9,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.RadioButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.example.weatherapplication.MainActivity
-import com.example.weatherapplication.R
 import com.example.weatherapplication.databinding.FragmentSettingBinding
-import com.example.weatherapplication.home.view.HomeFragment
 import com.example.weatherapplication.map.MapsActivity
 import com.example.weatherapplication.utility.Utility
-import org.intellij.lang.annotations.Language
+import kotlinx.coroutines.newFixedThreadPoolContext
 import java.util.Locale
 
 class SettingFragment : Fragment() {
@@ -49,6 +47,7 @@ class SettingFragment : Fragment() {
         changeTemp()
         loadLocale()
         changeSound()
+        changeSoundSpeed()
 
     }
 
@@ -103,19 +102,13 @@ class SettingFragment : Fragment() {
             when{
                 checkedButtonId == binding.radioButtonEnglish.id -> {
                      setLocale("eng")
-                      refreshFragment()
+                     refreshFragment()
                     startActivity(Intent( requireActivity(), MainActivity::class.java))
-//                    Utility.saveLanguageToSharedPref(requireContext(), Utility.Language_Key, Utility.Language_EN_Value)
-//                    LocaleManager.setLocale(requireContext())
-//                    startActivity(Intent( requireActivity(), MainActivity::class.java))
                 }
                 checkedButtonId == binding.radioButtonArabic.id -> {
                      setLocale("ar")
-                    refreshFragment()
+                     refreshFragment()
                     startActivity(Intent( requireActivity(), MainActivity::class.java))
-//                    Utility.saveLanguageToSharedPref(requireContext(), Utility.Language_Key, Utility.Language_AR_Value)
-//                    LocaleManager
-//                    startActivity(Intent( requireActivity(), MainActivity::class.java))
                 }
             }
         }
@@ -163,7 +156,11 @@ class SettingFragment : Fragment() {
     }
 
     private fun refreshFragment(){
-        fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit()
+        val ft: FragmentTransaction = this.fragmentManager!!.beginTransaction()
+        ft.detach(this)
+        ft.attach(this)
+        ft.commit()
+       // fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit()
     }
 
 }

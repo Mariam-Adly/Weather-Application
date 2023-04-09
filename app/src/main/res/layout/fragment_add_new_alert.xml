@@ -187,16 +187,15 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_margin="16dp"
-            android:backgroundTint="@color/black"
-            android:textColor="@color/white"
-            android:fontFamily="@font/merriweathersans_bold"
             android:layout_marginEnd="28dp"
+            android:backgroundTint="@color/black"
+            android:fontFamily="@font/merriweathersans_bold"
             android:text="@string/submit"
+            android:textColor="@color/white"
             app:cornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/alarmSoundGroup"
-            app:layout_constraintVertical_bias="0.068" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
         <Button
             android:id="@+id/alertCancelBtn"
@@ -213,52 +212,5 @@
             app:layout_constraintEnd_toStartOf="@+id/alertSubmitBtn"
             app:layout_constraintTop_toTopOf="@+id/alertSubmitBtn" />
 
-        <TextView
-            android:id="@+id/alarmSoundTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/merriweathersans_bold"
-            android:padding="4dp"
-            android:text="@string/alarm_sound"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="@+id/linearLayout5"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
-
-        <RadioGroup
-            android:id="@+id/alarmSoundGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/alarmSoundTxt"
-            app:layout_constraintTop_toBottomOf="@+id/alarmSoundTxt">
-
-            <RadioButton
-                android:id="@+id/notificationRB"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/merriweathersans_bold"
-                android:padding="8dp"
-                android:text="@string/notification_txt"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-
-            <RadioButton
-                android:id="@+id/soundRB"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/merriweathersans_bold"
-                android:padding="8dp"
-                android:text="@string/alarm_txt"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-        </RadioGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -59,6 +59,7 @@ class Utility {
         }
         fun timeStampToHour(dt : Long,lang : String) : String{
             val date = Date(dt * 1000)
+            date.time
             val format = SimpleDateFormat("h:mm a", Locale(lang))
             return format.format(date)
         }

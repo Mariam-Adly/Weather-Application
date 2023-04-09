@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     app:guidelineUseRtl="true"
-    tools:context=".setting.view.SettingFragment">
+    tools:context=".setting.SettingFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView2"
