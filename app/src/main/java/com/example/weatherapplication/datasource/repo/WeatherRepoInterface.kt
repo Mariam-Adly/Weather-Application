@@ -1,7 +1,6 @@
 package com.example.weatherapplication.datasource.repo
 
 
-import androidx.lifecycle.LiveData
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
@@ -12,11 +11,11 @@ interface WeatherRepoInterface {
 
     suspend fun getCurrentTempData(
         lat: Double, long: Double, lang: String="eng", tempUnit: String="metric"
-    ): Response<OpenWeather>
+    ): Flow<Response<OpenWeather>>
 
     suspend fun selectAllStoredWeatherModel(): Flow<OpenWeather>
     suspend fun insertWeatherModel(openWeather: OpenWeather)
-
+    suspend fun getCurrentWeatherForAlert(lat:Double , lon: Double) : Response<OpenWeather>
     suspend fun getAllFavoriteWeather() : Flow<List<FavoriteWeather>>
     suspend fun deleteFavoritePlace(favoriteWeather: FavoriteWeather)
     suspend fun insertFavoritePlace(favoriteWeather: FavoriteWeather)

@@ -3,12 +3,12 @@ package com.example.weatherapplication.datasource.repo
 
 import android.app.Activity
 import android.content.Context
-import androidx.lifecycle.LiveData
 import com.example.weatherapplication.datasource.database.LocalSourceInterface
 import com.example.weatherapplication.datasource.network.RemoteSource
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.FavoriteWeather
 import com.example.weatherapplication.model.OpenWeather
+import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 import kotlinx.coroutines.flow.*
 
@@ -31,10 +31,10 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
 
    override suspend fun getCurrentTempData(
         lat: Double, long: Double, lang: String ,tempUnit: String
-    ): Response<OpenWeather>{
+    ): Flow<Response<OpenWeather>> = flow{
 
-      return remoteSource.getCurrentTempData(lat,long,lang,tempUnit)
-   }
+      emit( remoteSource.getCurrentTempData(lat,long,lang,tempUnit))
+   }.flowOn(Dispatchers.IO)
 
     override suspend fun selectAllStoredWeatherModel(): Flow<OpenWeather> {
         return localSource.selectAllStoredWeatherModel()
@@ -42,6 +42,10 @@ class WeatherRepo (var remoteSource: RemoteSource,var localSource:LocalSourceInt
 
     override suspend fun insertWeatherModel(openWeather: OpenWeather) {
         localSource.insertWeatherModel(openWeather)
+    }
+
+    override suspend fun getCurrentWeatherForAlert(lat: Double, lon: Double): Response<OpenWeather> {
+        return remoteSource.getCurrentTempData(lat,lon,lang,"metric")
     }
 
     override suspend fun getAllFavoriteWeather(): Flow<List<FavoriteWeather>> {

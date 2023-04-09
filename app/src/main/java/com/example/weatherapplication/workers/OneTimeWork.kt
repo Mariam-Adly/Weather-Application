@@ -115,7 +115,7 @@ class OneTimeWork(
 //            return Result.success()
 //        }
         val currentTime = System.currentTimeMillis().div(1000)
-        val responseModel = repo.getCurrentTempData(alert.lat, alert.lon, "eng", "metric")
+        val responseModel = repo.getCurrentWeatherForAlert(alert.lat, alert.lon)
         val openWeather = responseModel.body()
         val notificationDescription =
             if (!openWeather?.alerts.isNullOrEmpty() && openWeather?.alerts!![0].event != null) {

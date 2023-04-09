@@ -121,12 +121,19 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val unitShared =
             requireActivity().getSharedPreferences("getSharedPreferences", Activity.MODE_PRIVATE)
         unit = unitShared.getString("units", "metric")!!
-        if (!Utility.isOnline(requireContext())) {
+        if (Utility.isOnline(requireContext())) {
+            getCurrentWeather()
+            requestPermissions()
+            initHoursRecycler()
+            initWeekRecycler()
+             getLastLocation()
+        } else {
             Snackbar.make(activity?.window?.decorView!!.rootView, "Offline", Snackbar.LENGTH_LONG)
                 .setBackgroundTint(resources.getColor(android.R.color.holo_red_light))
                 .show()
+            viewModel.getCurrentWeatherDB()
             lifecycleScope.launch(){
-                viewModel.data.collectLatest{ it ->
+                viewModel.weather.collectLatest{ it ->
                     when(it){
                         is ApiState.Failure -> {Toast. makeText ( requireContext(),  "Check ${it.msg}",Toast.LENGTH_SHORT) .show ()}
                         is ApiState.Loading -> {
@@ -140,28 +147,45 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             }
                         }
                         is ApiState.Success -> {
-                            viewModel.getCurrentWeatherDB()
+                            binding.locationName.text = it.data.timezone
+                            initHoursRecycler()
+                            initWeekRecycler()
                             updateUIWithWeatherData(it.data)
                         }
                     }
 
                 }
             }
-        } else {
-            getLastLocation()
-            requestPermissions()
-            getCurrentWeather()
-            initHoursRecycler()
-            initWeekRecycler()
         }
     }
 
     fun getCurrentWeather() {
-        viewModel.weather.observe(requireActivity()) {
-            if (it != null) {
-                updateUIWithWeatherData(it)
+        viewModel.getCurrentTemp(latitude,longitude,lang,unit)
+        lifecycleScope.launch {
+            viewModel.weather.collectLatest {
+                it -> when(it){
+                is ApiState.Failure -> {Toast. makeText ( requireContext(),  "Check ${it.msg}",Toast.LENGTH_SHORT) .show ()}
+                is ApiState.Loading -> {
+                    progressDialog = ProgressDialog(requireContext())
+                    progressDialog.setTitle("loading")
+                    progressDialog.setMessage("data is loading please wait")
+                    progressDialog.show()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        delay(2000)
+                        progressDialog.dismiss()
+                    }
+                }
+                is ApiState.Success -> {
+                    updateUIWithWeatherData(it.data)
+                }
+            }
+
             }
         }
+
+
+
+
     }
 
     fun updateUIWithWeatherData(weather: OpenWeather) {
