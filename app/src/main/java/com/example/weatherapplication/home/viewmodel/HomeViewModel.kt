@@ -1,5 +1,6 @@
 package com.example.weatherapplication.home.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapplication.datasource.repo.WeatherRepoInterface
@@ -20,11 +21,13 @@ class HomeViewModel(val repo : WeatherRepoInterface) : ViewModel(){
     lang: String,
     tempUnit:String) {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.i("mariam", "getCurrentTemp: $lat,$long")
             repo.getCurrentTempData(lat,long,lang,tempUnit).catch{
                 e-> _mutableWeather.value = ApiState.Failure(e)
             }
                 .collectLatest {
                     _mutableWeather.value = ApiState.Success(it.body()!!)
+                  //  Log.i("mariam", "getCurrentTemp: ${it.body()}")
                     repo.insertWeatherModel(it.body()!!)
                 }
             weather = _mutableWeather

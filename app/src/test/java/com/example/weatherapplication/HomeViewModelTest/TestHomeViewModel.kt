@@ -3,15 +3,14 @@ package com.example.weatherapplication.home.viewmodel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.weatherapplication.MainCoroutineRule
 import com.example.weatherapplication.datasource.FakeLocalDataSource
+import com.example.weatherapplication.datasource.FakeRemoteDataSource
 import com.example.weatherapplication.datasource.database.LocalSourceInterface
 import com.example.weatherapplication.datasource.network.RemoteSource
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.Current
 import com.example.weatherapplication.model.OpenWeather
 import com.example.weatherapplication.utility.ApiState
-import com.example.weatherforecast.DataSource.FakeRemoteDataSource
 import com.example.weatherforecast.DataSource.FakeTestRepositary
-
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -68,17 +67,17 @@ class TasksViewModelTest {
         val data7 =  Alert(12323,13652,13654,30.25,32.25,"")
         welcomeList=listOf(data2,data3,data4) as MutableList<OpenWeather>
         alertList=listOf(data,data5,data6,data7)as MutableList<Alert>
+        openWeather = current1 as Response<OpenWeather>
 
-        localDataSource= FakeLocalDataSource(alertList,
-            welcomeList ,
-            openWeather)
+        localDataSource= FakeLocalDataSource(alertList,welcomeList ,openWeather)
+
         remoteDataSource= FakeRemoteDataSource(openWeather)
         repository = FakeTestRepositary(localDataSource,remoteDataSource)
         homeViewModel = HomeViewModel(repository)
     }
 
     @Test
-    fun get_current_weather_return_welcome()= runBlocking {
+    fun get_current_weather_return_openWeather()= runBlocking {
     //given
         var lat=30.0
         var lon=25.0

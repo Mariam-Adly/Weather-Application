@@ -87,7 +87,7 @@ class OneTimeWork(
                 )
                 .setInputData(data.build())
                 .build()
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 myAlert.startDay.toString() + myAlert.endDay.toString(),
                 ExistingPeriodicWorkPolicy.REPLACE,
                 workRequest
@@ -108,13 +108,13 @@ class OneTimeWork(
         Log.d("mariam", "alertString: $alertString")
         var alert = Gson().fromJson(alertString, Alert::class.java)
         val now = Calendar.getInstance().timeInMillis
-//        if ((now > alert.endDay* 1000)) {
+        val currentTime = System.currentTimeMillis().div(1000)
+//        if (currentTime>alert.endDay) {
 //            //cancel the work task
 //            WorkManager.getInstance(context).cancelUniqueWork(alert.startDay.toString() + alert.endDay.toString())
 //            Log.d("mariam", "cancelUniqueWork: ")
 //            return Result.success()
 //        }
-        val currentTime = System.currentTimeMillis().div(1000)
         val responseModel = repo.getCurrentWeatherForAlert(alert.lat, alert.lon)
         val openWeather = responseModel.body()
         val notificationDescription =

@@ -3,6 +3,7 @@ package com.example.weatherapplication.FavoriteViewModel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.weatherapplication.MainCoroutineRule
 import com.example.weatherapplication.datasource.FakeLocalDataSource
+import com.example.weatherapplication.datasource.FakeRemoteDataSource
 import com.example.weatherapplication.datasource.database.LocalSourceInterface
 import com.example.weatherapplication.datasource.network.RemoteSource
 import com.example.weatherapplication.favorite.viewmodel.FavoriteViewModel
@@ -11,7 +12,6 @@ import com.example.weatherapplication.model.Current
 import com.example.weatherapplication.model.OpenWeather
 import com.example.weatherapplication.utility.ApiState
 import com.example.weatherapplication.utility.ApiStateList
-import com.example.weatherforecast.DataSource.FakeRemoteDataSource
 import com.example.weatherforecast.DataSource.FakeTestRepositary
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
