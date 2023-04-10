@@ -2,14 +2,13 @@ package com.example.weatherapplication.datasource.repo
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.weatherapplication.FakeRemoteDataSource
 import com.example.weatherapplication.datasource.FakeLocalDataSource
 import com.example.weatherapplication.datasource.database.LocalSourceInterface
 import com.example.weatherapplication.datasource.network.RemoteSource
 import com.example.weatherapplication.model.Alert
 import com.example.weatherapplication.model.Current
 import com.example.weatherapplication.model.OpenWeather
-import com.example.weatherforecast.DataSource.FakeRemoteDataSource
-import com.example.weatherforecast.DataSource.FakeTestRepositary
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.MatcherAssert
@@ -54,7 +53,7 @@ class WeatherRepoTest {
             listOf(data2,data3,data4) as MutableList<OpenWeather>,
            data1 as Response<OpenWeather>
         )
-        remoteDataSource=FakeRemoteDataSource(data1)
+        remoteDataSource= FakeRemoteDataSource(data1)
         repo = WeatherRepo.getInstance(remoteDataSource,localDataSource,context)
     }
 

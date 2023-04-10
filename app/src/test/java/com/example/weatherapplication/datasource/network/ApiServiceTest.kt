@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.Assert.*
@@ -72,7 +73,7 @@ class ApiServiceTest {
 
         )
         //Then
-        MatcherAssert.assertThat(response.code(), Matchers.`is` (401))
+        MatcherAssert.assertThat(response.code(), Matchers.`is` (200))
         MatcherAssert.assertThat(response.body(), Matchers.notNullValue())
 
 

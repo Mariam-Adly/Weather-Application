@@ -86,6 +86,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onResume() {
         super.onResume()
+
         if(!Utility.isOnline(requireContext())){
             Toast.makeText(requireContext(), R.string.you_are_offline,Toast.LENGTH_SHORT).show()
         }else {
@@ -130,6 +131,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             initHoursRecycler()
             initWeekRecycler()
              getLastLocation()
+            Log.i("mariam", "onViewCreated: ")
         } else {
             Snackbar.make(activity?.window?.decorView!!.rootView, "Offline", Snackbar.LENGTH_LONG)
                 .setBackgroundTint(resources.getColor(android.R.color.holo_red_light))
@@ -163,7 +165,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     fun getCurrentWeather() {
-        viewModel.getCurrentTemp(latitude,longitude,lang,unit)
+     //   viewModel.getCurrentTemp(latitude,longitude,lang,unit)
         lifecycleScope.launch {
             viewModel.weather.collectLatest {
                 it -> when(it){
@@ -283,7 +285,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             val mLastLocation: Location = locationResult.lastLocation
                 latitude = mLastLocation.latitude
                 longitude = mLastLocation.longitude
-                 Locale.setDefault(Locale(lang,"eg"))
+                //Locale.setDefault(Locale(lang,"eg"))
                 Log.i("mariam", "onLocationResult: $latitude and $longitude")
                 viewModel.getCurrentTemp(latitude, longitude, lang, unit)
                 if(lang == "ar") {

@@ -3,16 +3,12 @@ package com.example.weatherapplication.datasource.database
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.example.weatherapplication.model.Alert
-import com.example.weatherapplication.model.Current
-import com.example.weatherapplication.model.OpenWeather
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert
 import org.hamcrest.core.IsNull
@@ -30,6 +26,8 @@ class WeatherDaoTest {
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
+
+
     private lateinit var db : AppDatabase
     private lateinit var weatherDao: WeatherDao
 
@@ -47,32 +45,9 @@ class WeatherDaoTest {
         db.close()
     }
 
-    @Test
-    fun selectWeatherModel() {
-    }
 
     @Test
-    fun insertWeatherModel() {
-    }
-
-    @Test
-    fun getAllFavoriteWeather() {
-    }
-
-    @Test
-    fun insertFavoritePlace() {
-    }
-
-    @Test
-    fun deleteFavoritePlace() {
-    }
-
-    @Test
-    fun updateFavoritePlace() {
-    }
-
-    @Test
-    suspend fun getAlerts() = runBlockingTest {
+    fun getAlerts_insertAlert_returnNumber() = runBlockingTest{
         val alertOne =  Alert(12323,13652,1245,13.65,12.21,"")
         val alertTwo = Alert(2323,13652,1245,13.65,12.21,"")
         val alertThree = Alert(1223,13652,1245,13.65,12.21,"")
@@ -84,11 +59,11 @@ class WeatherDaoTest {
         weatherDao.insertAlert(alertFour)
 
         val result = weatherDao.getAlerts().first()
-        MatcherAssert.assertThat(result.size,CoreMatchers. `is`(4))
+        MatcherAssert.assertThat(result.size, `is`(4))
     }
 
     @Test
-    fun insertFavourite_insertOneItem_returnTheItem() = runBlockingTest {
+    fun insertAlert_insertOneItem_returnTheItem() = runBlockingTest{
         //Given
         val data = Alert(12323,13652,1245,13.65,12.21,"")
 
@@ -100,9 +75,6 @@ class WeatherDaoTest {
         MatcherAssert.assertThat(result[0], IsNull.notNullValue())
 
     }
-
-
-
 
 
     @Test
