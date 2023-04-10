@@ -58,3 +58,14 @@ visibility distance, relative humidity, Wind Speed
 * Overlay Permission.
 * Network Permission.
 * Location Permission.
+
+## ScreenShots
+![photo](https://github.com/Mariam-Adly/Weather-Application/blob/master/app/src/main/res/drawable/page1.jpeg)
+<br>
+![photo](https://github.com/Mariam-Adly/Weather-Application/blob/master/app/src/main/res/drawable/page2.jpeg)
+![photo](https://github.com/Mariam-Adly/Weather-Application/blob/master/app/src/main/res/drawable/page3.jpeg)
+![photo](https://github.com/Mariam-Adly/Weather-Application/blob/master/app/src/main/res/drawable/page4.jpeg)
+![photo](https://github.com/Mariam-Adly/Weather-Application/blob/master/app/src/main/res/drawable/page5.jpeg)
+![photo](https://github.com/Mariam-Adly/Weather-Application/blob/master/app/src/main/res/drawable/page6.jpeg)
+![photo](https://github.com/Mariam-Adly/Weather-Application/blob/master/app/src/main/res/drawable/page8.jpeg)
+
